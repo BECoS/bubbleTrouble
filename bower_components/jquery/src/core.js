@@ -478,12 +478,16 @@ jQuery.each("Boolean Number String Function Array Date RegExp Object Error".spli
 });
 
 function isArraylike( obj ) {
+<<<<<<< HEAD
 
 	// Support: iOS 8.2 (not reproducible in simulator)
 	// `in` check used to prevent JIT error (gh-2145)
 	// hasOwn isn't used here due to false negatives
 	// regarding Nodelist length in IE
 	var length = "length" in obj && obj.length,
+=======
+	var length = obj.length,
+>>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		type = jQuery.type( obj );
 
 	if ( type === "function" || jQuery.isWindow( obj ) ) {

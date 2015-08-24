@@ -1,6 +1,10 @@
 {
   "name": "EaselJS",
+<<<<<<< HEAD
   "version": "0.8.1",
+=======
+  "version": "0.8.0",
+>>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
   "homepage": "https://github.com/CreateJS/EaselJS",
   "authors": [
     "gskinner",
@@ -9,7 +13,11 @@
     "wdamien"
   ],
   "description": "The Easel Javascript library provides a full, hierarchical display list, a core interaction model, and helper classes to make working with the HTML5 Canvas element much easier. Part of the CreateJS suite of libraries.",
+<<<<<<< HEAD
   "main": "lib/easeljs-0.8.1.combined.js",
+=======
+  "main": "lib/easeljs-0.8.0.combined.js",
+>>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
   "keywords": [
     "easeljs",
     "html5",
@@ -20,7 +28,10 @@
   "license": "MIT",
   "ignore": [
     "**/.*",
+<<<<<<< HEAD
     "_assets",
+=======
+>>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
     "node_modules",
     "bower_components",
     "bower.json",
@@ -29,7 +40,10 @@
     "docs",
     "examples",
     "extras",
+<<<<<<< HEAD
     "icon.png",
+=======
+>>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
     "LICENSE.txt",
     "README.md",
     "README_SECURITY_ERROR.txt",
@@ -38,6 +52,7 @@
     "tutorials",
     "VERSIONS.txt"
   ],
+<<<<<<< HEAD
   "_release": "0.8.1",
   "_resolution": {
     "type": "version",
@@ -47,4 +62,16 @@
   "_source": "git://github.com/CreateJS/EaselJS.git",
   "_target": "~0.8.0",
   "_originalSource": "easeljs"
+=======
+  "_release": "0.8.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.8.0",
+    "commit": "ff15fd1af6135335afebd36ac714598c6db33bc9"
+  },
+  "_source": "git://github.com/CreateJS/EaselJS.git",
+  "_target": "~0.8.0",
+  "_originalSource": "easeljs",
+  "_direct": true
+>>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 }
