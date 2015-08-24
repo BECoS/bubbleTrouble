@@ -13,6 +13,7 @@ var oldY;
 var degToRad = -Math.PI / 180;
 var score = 0;
 var nIntervId;
+var special = false;
 var sonic = new createjs.Shape();
 
 $(document).ready(function() {
@@ -78,10 +79,27 @@ function tick(event) {
     }
   //}
   
-  if (specialContainer.children.length > 0) {
+  if (special) {
+    for (var x = 0; x < enemyContainer.children.length; x++)  {
+      var xDistance = sonic.x - enemyContainer.children[x].x;
+      var yDistance = sonic.y - enemyContainer.children[x].y;
+      var distance = pythagorus(xDistance, yDistance);
+
+      if (distance < sonic.radius + 25) {
+        destroyEnemy(null, x);
+      }
+    }
+
     specialContainer.children[0].graphics.clear();
     specialContainer.children[0].radius += 5;
     increaseSuperSonic(specialContainer.children[0], specialContainer.children[0].radius);
+ 
+    if (sonic.radius > stage.canvas.width) {
+      createjs.Tween.get(specialContainer.children[0])
+        .to({alpha:0, visible:false}, 100);
+      specialContainer.removeChildAt(0);
+      special = false;
+    }    
   }
 
   handleComplete();
@@ -92,10 +110,16 @@ function tick(event) {
 
 /*** Enemy Functions ***/
 function destroyEnemy(bulletIndex, enemyIndex) {
+  if (bulletIndex === null) {
+    createjs.Tween.get(enemyContainer.children[enemyIndex])
+      .to({alpha:0, visible:false}, 100);
+  }
+  else {
   createjs.Tween.get(enemyContainer.children[enemyIndex])
     .to({alpha:0, visible:false}, 100);
   createjs.Tween.get(bulletContainer.children[bulletIndex])
     .to({alpha:0, visible:false}, 100);
+  }
   
   incrementScore(100);
   addParticles(enemyContainer.children[enemyIndex].x, enemyContainer.children[enemyIndex].y, getRandomIntInclusive(7, 17));
@@ -179,8 +203,13 @@ function incrementScore(amount) {
 }
 
 function cleanContainers(bulletIndex, enemyIndex) {
-  console.log(enemyContainer.removeChildAt(enemyIndex));
-  console.log(bulletContainer.removeChildAt(bulletIndex));
+  if (bulletIndex === null) {
+    console.log(enemyContainer.removeChildAt(enemyIndex));
+  }
+  else {
+    console.log(enemyContainer.removeChildAt(enemyIndex));
+    console.log(bulletContainer.removeChildAt(bulletIndex));
+  }
 }
 
 function moveBackground(element, index, array) {
@@ -291,7 +320,10 @@ function createParticle(particle) {
 }
 
 function superSonic() {
+  special = true;
   sonic.radius = 30;
+  sonic.alpha = 1;
+  sonic.visible = true;
   sonic.graphics.setStrokeStyle(10).beginStroke(createjs.Graphics.getHSL(Math.random()*360,100,50)).drawCircle(0, 0, sonic.radius);
   
   sonic.x = triangle.x;

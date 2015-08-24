@@ -3,10 +3,6 @@ body {
   padding-bottom: 10px;
 }
 
-.jumbotron {
-  margin-top: 30px;
-}
-
 .container.theme-showcase {
   background-color: azure;
 }
