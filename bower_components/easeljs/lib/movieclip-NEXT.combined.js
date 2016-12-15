@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*!
 * EaselJS
 * Visit http://createjs.com/ for documentation, updates and examples.
@@ -26,8 +25,6 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 * OTHER DEALINGS IN THE SOFTWARE.
 */
-=======
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 
 //##############################################################################
@@ -93,10 +90,7 @@ this.createjs = this.createjs||{};
 	 **/
 	function MovieClip(mode, startPosition, loop, labels) {
 		this.Container_constructor();
-<<<<<<< HEAD
 		!MovieClip.inited&&MovieClip.init(); // static init
-=======
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		
 		
 	// public properties:
@@ -211,11 +205,7 @@ this.createjs = this.createjs||{};
 		 * passed into {{#crossLink "Stage/update"}}{{/crossLink}}.
 		 * @property framerate
 		 * @type {Number}
-<<<<<<< HEAD
 		 * @default null
-=======
-		 * @default 0
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		 **/
 		this.framerate = null;
 		
@@ -298,7 +288,6 @@ this.createjs = this.createjs||{};
 	MovieClip.SYNCHED = "synched";
 	
 	
-<<<<<<< HEAD
 // static properties:
 	MovieClip.inited = false;
 	
@@ -312,8 +301,6 @@ this.createjs = this.createjs||{};
 	};
 	
 	
-=======
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 // getter / setters:
 	/**
 	 * Use the {{#crossLink "MovieClip/labels:property"}}{{/crossLink}} property instead.
@@ -335,7 +322,6 @@ this.createjs = this.createjs||{};
 		this._updateTimeline();
 		return this.timeline.getCurrentLabel();
 	};
-<<<<<<< HEAD
 	
 	/**
 	 * Use the {{#crossLink "MovieClip/duration:property"}}{{/crossLink}} property instead.
@@ -346,8 +332,6 @@ this.createjs = this.createjs||{};
 	p.getDuration = function() {
 		return this.timeline.duration;
 	};
-=======
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 	/**
 	 * Returns an array of objects with label and position (aka frame) properties, sorted by position.
@@ -356,11 +340,7 @@ this.createjs = this.createjs||{};
 	 * @type {Array}
 	 * @readonly
 	 **/
-<<<<<<< HEAD
 	
-=======
-	 
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	/**
 	 * Returns the name of the label on or immediately before the current frame. See TweenJS: Timeline.getCurrentLabel()
 	 * for more information.
@@ -368,7 +348,6 @@ this.createjs = this.createjs||{};
 	 * @type {String}
 	 * @readonly
 	 **/
-<<<<<<< HEAD
 	
 	/**
 	 * Returns the duration of this MovieClip in seconds or ticks. Identical to {{#crossLink "MovieClip/duration:property"}}{{/crossLink}}
@@ -390,12 +369,6 @@ this.createjs = this.createjs||{};
 			currentLabel: { get: p.getCurrentLabel },
 			totalFrames: { get: p.getDuration },
 			duration: { get: p.getDuration }
-=======
-	try {
-		Object.defineProperties(p, {
-			labels: { get: p.getLabels },
-			currentLabel: { get: p.getCurrentLabel }
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		});
 	} catch (e) {}
 
@@ -553,13 +526,8 @@ this.createjs = this.createjs||{};
 	 **/
 	p._reset = function() {
 		this._prevPos = -1;
-<<<<<<< HEAD
 		this._t = this.currentFrame = 0;
 		this.paused = false;
-=======
-		this._t = 0;
-		this.currentFrame = 0;
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	};
 	
 	/**
@@ -570,7 +538,6 @@ this.createjs = this.createjs||{};
 		var tl = this.timeline;
 		var synched = this.mode != MovieClip.INDEPENDENT;
 		tl.loop = (this.loop==null) ? true : this.loop;
-<<<<<<< HEAD
 		
 		var pos = synched ? this.startPosition + (this.mode==MovieClip.SINGLE_FRAME?0:this._synchOffset) : (this._prevPos < 0 ? 0 : this._prevPosition);
 		var mode = synched || !this.actionsEnabled ? createjs.Tween.NONE : null;
@@ -580,15 +547,6 @@ this.createjs = this.createjs||{};
 		
 		// update timeline position, ignoring actions if this is a graphic.
 		tl.setPosition(pos, mode);
-=======
-
-		// update timeline position, ignoring actions if this is a graphic.
-		if (synched) {
-			tl.setPosition(this.startPosition + (this.mode==MovieClip.SINGLE_FRAME?0:this._synchOffset), createjs.Tween.NONE);
-		} else {
-			tl.setPosition(this._prevPos < 0 ? 0 : this._prevPosition, this.actionsEnabled ? null : createjs.Tween.NONE);
-		}
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 		this._prevPosition = tl._prevPosition;
 		if (this._prevPos == tl._prevPos) { return; }
@@ -742,10 +700,6 @@ this.createjs = this.createjs||{};
 		return (ratio == 1 ? endValues[prop] : startValues[prop]);
 	};
 
-<<<<<<< HEAD
-=======
-	MovieClipPlugin.install();
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 }());
 
 //##############################################################################
@@ -779,10 +733,6 @@ this.createjs = this.createjs || {};
 	 * @type String
 	 * @static
 	 **/
-<<<<<<< HEAD
 	s.buildDate = /*=date*/"Wed, 27 May 2015 18:12:21 GMT"; // injected by build process
-=======
-	s.buildDate = /*=date*/"Thu, 11 Dec 2014 23:16:15 GMT"; // injected by build process
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 })();

@@ -66,13 +66,21 @@ function tick(event) {
   if (bulletContainer.children.length > 0 ) {
     for (var x = 0; x < bulletContainer.children.length; x++) {
       for (var y = 0; y < enemyContainer.children.length; y++) {
+                    
         var xDistance = bulletContainer.children[x].x - enemyContainer.children[y].x;
         var yDistance = bulletContainer.children[x].y - enemyContainer.children[y].y;
-        var distance = pythagorus(xDistance, yDistance);
 
-        if (distance < 5 + 25) {
+        var xTriDistance = triangle.x - enemyContainer.children[y].x;
+        var yTriDistance = triangle.y - enemyContainer.children[y].y;
+
+        var distanceOne = pythagorus(xDistance, yDistance);
+        var distanceTwo = pythagorus(xTriDistance, yTriDistance);
+
+        if (distanceOne < 5 + 25) {
           destroyEnemy(x, y);
         }
+        else if (distanceTwo < 15 + 25) {
+          destroyEnemy(x, y);
       }
     }
   }
@@ -161,6 +169,10 @@ function handleComplete() {
       enemies[x].xDirection = -(enemies[x].xDirection);
     }
   }
+}
+
+function collision() {
+  
 }
 
 $(document).keydown(function(event) {

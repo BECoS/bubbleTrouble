@@ -5,6 +5,7 @@ var bulletContainer = new createjs.Container();
 var enemyContainer = new createjs.Container();
 var particleContainer = new createjs.Container();
 var specialContainer = new createjs.Container();
+var scoreDisplay = new createjs.Text('0', '20px Arial');
 var enemies = [];
 var spheres = [];
 var particles = [];
@@ -13,8 +14,11 @@ var oldY;
 var degToRad = -Math.PI / 180;
 var score = 0;
 var nIntervId;
+var enemyInterval;
 var special = false;
 var sonic = new createjs.Shape();
+var tempShield = false;
+var lives = 3;
 
 $(document).ready(function() {
   var context = $('canvas')[0].getContext('2d');
@@ -24,9 +28,12 @@ $(document).ready(function() {
   stage = new createjs.Stage('canvas');
   stage.mouseEventsEnabled = true;
 
-  createjs.Ticker.setFPS(60);
+  createjs.Ticker.setFPS(45);
   createjs.Ticker.on('tick', tick);
   createjs.Ticker.addEventListener('tick', stage);
+
+  scoreDisplay.x = context.canvas.width - ((1/4)*context.canvas.width);
+  scoreDisplay.baseLine = 'alphabetic';
  
   triangle = new createjs.Shape();
   triangle.graphics.beginFill('DeepSkyBlue');
@@ -44,6 +51,7 @@ $(document).ready(function() {
   stage.addChild(specialContainer);
   stage.addChild(enemyContainer);
   stage.addChild(particleContainer);
+  stage.addChild(scoreDisplay);
   
   stage.on("stagemousemove", function(evt) {
     if (oldX) {
@@ -55,38 +63,48 @@ $(document).ready(function() {
     oldY = evt.stageY;
   })
   
-  nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
+  //needs to be randomized
+  //enemyInterval = setInterval(addEnemy, 3000);
+  (function loop() {
+    var rand = 1000 * getRandomIntInclusive(0.1, 3);
+    setTimeout(function() {
+    //alert('A');
+    addEnemy();
+    loop();  
+    }, rand);
+  }());
+  //nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
 
-  stage.on("stagemousedown", shoot)
-  stage.on("stagemouseup", addEnemy)
+  stage.on("stagemousedown", function() {
+    if (!tempShield)
+      shoot();
+    })
 });
 
 function tick(event) {
   /**Move projectiles**/
   bulletContainer.children.forEach(moveProjectiles);
 
-  //if (bulletContainer.children.length > 0 ) {
-    for (var x = 0; x < bulletContainer.children.length; x++) {
-      for (var y = 0; y < enemyContainer.children.length; y++) {
-        var xDistance = bulletContainer.children[x].x - enemyContainer.children[y].x;
-        var yDistance = bulletContainer.children[x].y - enemyContainer.children[y].y;
-        var distance = pythagorus(xDistance, yDistance);
+  for (var x = 0; x < enemyContainer.children.length; x++) {
+    
+    /**Check for ship collisions**/
+    shipCollision(enemyContainer.children[x]);
 
-        if (distance < 5 + 25) {
-          destroyEnemy(x, y);
-        }
-      }
+    /**Check for bullet collisions**/
+    for (var y = 0; y < bulletContainer.children.length; y++) {
+      bulletCollision(enemyContainer.children[x], bulletContainer.children[y]);
     }
-  //}
+  }
   
   if (special) {
-    for (var x = 0; x < enemyContainer.children.length; x++)  {
+    for (var x = 0; x < enemyContainer.children.length; x++) {
       var xDistance = sonic.x - enemyContainer.children[x].x;
       var yDistance = sonic.y - enemyContainer.children[x].y;
       var distance = pythagorus(xDistance, yDistance);
 
       if (distance < sonic.radius + 25) {
         destroyEnemy(null, x);
+        incrementScore();
       }
     }
 
@@ -94,7 +112,7 @@ function tick(event) {
     specialContainer.children[0].radius += 5;
     increaseSuperSonic(specialContainer.children[0], specialContainer.children[0].radius);
  
-    if (sonic.radius > stage.canvas.width) {
+    if (sonic.radius >= stage.canvas.width) {
       createjs.Tween.get(specialContainer.children[0])
         .to({alpha:0, visible:false}, 100);
       specialContainer.removeChildAt(0);
@@ -109,27 +127,28 @@ function tick(event) {
 }
 
 /*** Enemy Functions ***/
-function destroyEnemy(bulletIndex, enemyIndex) {
-  if (bulletIndex === null) {
-    createjs.Tween.get(enemyContainer.children[enemyIndex])
-      .to({alpha:0, visible:false}, 100);
-  }
-  else {
-  createjs.Tween.get(enemyContainer.children[enemyIndex])
-    .to({alpha:0, visible:false}, 100);
-  createjs.Tween.get(bulletContainer.children[bulletIndex])
-    .to({alpha:0, visible:false}, 100);
-  }
-  
-  incrementScore(100);
-  addParticles(enemyContainer.children[enemyIndex].x, enemyContainer.children[enemyIndex].y, getRandomIntInclusive(7, 17));
+function destroyBullet(bullet) {
+  createjs.Tween.get(bullet)
+    .to({alpha:0, visible:false}, 100);  
+}
 
-  setTimeout(cleanContainers(bulletIndex, enemyIndex), 100);
+function destroyEnemy(enemy) {
+  createjs.Tween.get(enemy)
+    .to({alpha:0, visible:false}, 100);
+  
+  addParticles(enemy.x, enemy.y, getRandomIntInclusive(7, 17));
+  enemies.splice(enemyContainer.getChildIndex(enemy), 1);
 }
 
 function moveEnemies(element, index, array) {
-  enemyContainer.children[index].x += (enemies[index].run * enemies[index].xDirection);
-  enemyContainer.children[index].y += (enemies[index].rise * enemies[index].yDirection);
+  //enemyContainer.children[index].x += (enemies[index].run * enemies[index].xDirection);
+  //enemyContainer.children[index].y += (enemies[index].rise * enemies[index].yDirection);
+
+  arcTan = Math.atan2(triangle.y - enemyContainer.children[index].y, triangle.x - enemyContainer.children[index].x);
+  
+  enemyContainer.children[index].x += (Math.cos(arcTan) * enemies[index].run);
+  enemyContainer.children[index].y += (Math.sin(arcTan) * enemies[index].rise)
+
 }
 
 function createEnemy(enemy) {
@@ -143,8 +162,8 @@ function createEnemy(enemy) {
 function addEnemy() {
   var enemy = new createjs.Shape();
   enemy.graphics.beginFill('black').drawCircle(0, 0, 25);
-  enemy.x = Math.random() * stage.canvas.width;
-  enemy.y = Math.random() * stage.canvas.height;
+  enemy.x = getRandomIntInclusive(26,474);
+  enemy.y = getRandomIntInclusive(26,474);
   enemy.alpha = 0;
 
   enemies.push(new createEnemy(enemy));
@@ -152,22 +171,9 @@ function addEnemy() {
   enemyContainer.addChild(enemies[enemies.length - 1].shape);
   createjs.Tween.get(enemies[enemies.length - 1].shape)
     .to({alpha:1, visible:true}, 500);
-    //.call(handleComplete);
-  /*for (var i = 0; i < 20; i++) {
-    var circle = new createjs.Shape();
-    circle.graphics.setStrokeStyle(15);
-    circle.graphics.beginStroke('#113355');
-    circle.graphics.drawCircle(0, 0, (i + 1) * 4);
-    circle.alpha = 1 - i * 0.02;
-    circle.x = 100;
-    circle.y = 100;
-    circle.compositeOperation = 'lighter';
-
-    enemyContainer.addChild(circle);
-  }*/
 }
 
-/*** Projectile Funcdtions ***/
+/*** Projectile Functions ***/
 function shoot() {
   var shot = new createjs.Shape();
   shot.graphics.beginFill('black').drawCircle(0, 0, 5);
@@ -187,6 +193,7 @@ function moveProjectiles(element, index, array) {
   array[index].x += run;
   array[index].y -= rise;
 
+  //clean this up
   /**Remove offstage bulletContainer**/
   if (array[index].x < 0 || array[index].x > stage.canvas.width)
     bulletContainer.removeChildAt(index);
@@ -194,24 +201,66 @@ function moveProjectiles(element, index, array) {
     bulletContainer.removeChildAt(index);
 }
 
-function pythagorus(a, b) {
-  return Math.sqrt(Math.pow(a, 2) +  Math.pow(b, 2));
-}
+/**Ship collision detection**/
+function shipCollision(enemy) {
+  //var xTriDistance = triangle.x - enemy.x;
+  //var yTriDistance = triangle.y - enemy.y;
+  var distanceTwo = pythagorus(distanceCalc(triangle.x, enemy.x),
+    distanceCalc(triangle.y, enemy.y));
 
-function incrementScore(amount) {
-  score += amount;
-}
-
-function cleanContainers(bulletIndex, enemyIndex) {
-  if (bulletIndex === null) {
-    console.log(enemyContainer.removeChildAt(enemyIndex));
+  if (distanceTwo < 15 + 25 && !tempShield) {
+    destroyEnemy(enemy);
+    cleanContainer(enemyContainer, enemy);
+    if (--lives <= 0)
+      gameover();
+    else
+      resetShip();
   }
-  else {
-    console.log(enemyContainer.removeChildAt(enemyIndex));
-    console.log(bulletContainer.removeChildAt(bulletIndex));
+}
+
+function bulletCollision(enemy, bullet) {
+  //var xDistance = ;
+  //var yDistance = bulletContainer.children[y].y - enemyContainer.children[x].y;
+  var distanceOne = pythagorus(distanceCalc(bullet.x, enemy.x),
+    distanceCalc(bullet.y, enemy.y));
+
+  if (distanceOne < 5 + 25) {
+    destroyEnemy(enemy);
+    destroyBullet(bullet);
+    cleanContainer(enemyContainer, enemy);
+    cleanContainer(bulletContainer, bullet);
+    incrementScore();
   }
 }
 
+function gameover() {
+  clearInterval(enemyInterval);
+  clearInterval(nIntervId);
+  tempShield = true;
+
+  for (x = 0; x < enemies.length; x++) {
+    createjs.Tween.get(enemyContainer.children[x])
+    .to({alpha:0, visible:false}, 100);
+    addParticles(enemyContainer.children[x].x, enemyContainer.children[x].y, getRandomIntInclusive(7, 17));
+  }
+
+  setTimeout(enemyContainer.removeAllChildren(), 100);
+  setTimeout(bulletContainer.removeAllChildren(), 100);
+
+  enemies.length = 0;
+}
+
+/**Gives the ship a two second window after being hit**/
+function resetShip() {
+  createjs.Tween.get(triangle)
+    .to({alpha:0}, 500).to({alpha:1}, 500).to({alpha:0}, 500).to({alpha:1}, 500);
+  tempShield = true;
+  setTimeout(function() {
+    tempShield = false;
+  }, 2000);
+}
+
+/** Background Functions **/
 function moveBackground(element, index, array) {
   sphereContainer.children[index].y -= spheres[index].rise;
   
@@ -220,20 +269,6 @@ function moveBackground(element, index, array) {
   
   if (array[index].y < -15)
     sphereContainer.removeChildAt(index);
-}
-
-function handleComplete() {
-  for (var x = 0; x < enemyContainer.children.length; x++) {
-    //**Check width boundaries**//
-    if (enemyContainer.children[x].y < 25 || enemyContainer.children[x].y + 25 > stage.canvas.height) {
-      enemies[x].yDirection = -(enemies[x].yDirection);
-    }
-    
-    //**Check height boundaries**//
-    if (enemyContainer.children[x].x < 25 || enemyContainer.children[x].x + 25 > stage.canvas.width) {
-      enemies[x].xDirection = -(enemies[x].xDirection);
-    }
-  }
 }
 
 function addSphere() {
@@ -255,33 +290,31 @@ function createSphere(sphere) {
   this.rise = getRandomIntInclusive(1, 5); 
 }
 
-function getRandomIntInclusive(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function particleEmitter() {
-  
-}
-
+/** Particle Functions **/
 function moveParticles(element, index, array) {
   particleContainer.children[index].x += (particles[index].run * particles[index].xDirection);
   particleContainer.children[index].y += (particles[index].rise * particles[index].yDirection);
+  particleContainer.children[index].rotation++;
 }
 
 function addParticles(x, y, amount) {
   while (amount > 0) {
   var particle = new createjs.Shape();
-  
-  if (getRandomIntInclusive(0, 1) > 0) {
+  var randInt = getRandomIntInclusive(0, 2);
+
+  if (randInt === 0) {
     particle.graphics.setStrokeStyle(1).beginStroke(createjs.Graphics.getHSL(Math.random()*360,100,50)).drawCircle(0, 0, getRandomIntInclusive(5, 25));
   }
-  else {
+  else if (randInt === 1) {
     particle.graphics.beginFill(createjs.Graphics.getHSL(Math.random()*360,100,50)).drawCircle(0, 0, getRandomIntInclusive(5, 25));
     var blurFilter = new createjs.BlurFilter(5, 5, 1);
     particle.filters = [blurFilter];
     var bounds = blurFilter.getBounds();
       
     particle.cache(-50+bounds.x, -50+bounds.y, 100+bounds.width, 100+bounds.height);
+  }
+  else {
+    particle.graphics.beginFill("#FF0").drawPolyStar(0, 0,  getRandomIntInclusive(5, 15), 5, 0.5, -90);
   }
   
   particle.x = x;
@@ -336,6 +369,53 @@ function increaseSuperSonic(aShape, radius) {
   aShape.graphics.setStrokeStyle(10).beginStroke(createjs.Graphics.getHSL(Math.random()*360,100,50)).drawCircle(0, 0, radius);
 }
 
+function handleComplete() {
+  for (var x = 0; x < enemyContainer.children.length; x++) {
+    //**Check width boundaries**//
+    if (enemyContainer.children[x].y < 25 || enemyContainer.children[x].y + 25 > stage.canvas.height) {
+      enemies[x].yDirection = -(enemies[x].yDirection);
+    }
+    
+    //**Check height boundaries**//
+    if (enemyContainer.children[x].x < 25 || enemyContainer.children[x].x + 25 > stage.canvas.width) {
+      enemies[x].xDirection = -(enemies[x].xDirection);
+    }
+  }
+}
+
+function getRandomIntInclusive(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function pythagorus(a, b) {
+  return Math.sqrt(Math.pow(a, 2) +  Math.pow(b, 2));
+}
+
+function distanceCalc(a, b) {
+  return a - b; 
+} 
+
+function incrementScore() {
+  score += 100;
+  scoreDisplay.text = score;
+}
+
+function cleanContainers(bulletIndex, enemyIndex) {
+  if (bulletIndex === null) {
+    console.log(enemyContainer.removeChildAt(enemyIndex));
+  }
+  else {
+    console.log(enemyContainer.removeChildAt(enemyIndex));
+    console.log(bulletContainer.removeChildAt(bulletIndex));
+  }
+  /**fixes the change in movement when the bullet collides**/
+  enemies.splice(enemyIndex, 1);
+}
+
+function cleanContainer(container, shape) {
+  container.removeChild(shape);
+}
+
 $(document).keydown(function(event) {
   if (event.which == 37) {
     triangle.rotation--;
@@ -343,7 +423,16 @@ $(document).keydown(function(event) {
   else if (event.which == 39) {
     triangle.rotation++;
   }
-  else if (event.which == 32) {
+  /**else if (event.which == 32) {
     superSonic();
+  }**/
+  else if (event.which == 32) {
+    //initialize();
+    enemyInterval = setInterval(addEnemy, 3000);
+    nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
+    tempShield = false;
+    lives = 3;
+    score = 0;
+    scoreDisplay.text = score;
   }
 });

@@ -65,19 +65,20 @@ function tick(event) {
   /**Move projectiles**/
   bulletContainer.children.forEach(moveProjectiles);
 
-  //if (bulletContainer.children.length > 0 ) {
-    for (var x = 0; x < bulletContainer.children.length; x++) {
-      for (var y = 0; y < enemyContainer.children.length; y++) {
-        var xDistance = bulletContainer.children[x].x - enemyContainer.children[y].x;
-        var yDistance = bulletContainer.children[x].y - enemyContainer.children[y].y;
-        var distance = pythagorus(xDistance, yDistance);
+  for (var x = 0; x < enemyContainer.children.length; x++) {
+    
+    shipCollision(enemyContainer.children[x]);
 
-        if (distance < 5 + 25) {
-          destroyEnemy(x, y);
-        }
+    for (var y = 0; y < bulletContainer.children.length; x++) {
+      var xDistance = bulletContainer.children[y].x - enemyContainer.children[x].x;
+      var yDistance = bulletContainer.children[y].y - enemyContainer.children[x].y;
+      var distanceOne = pythagorus(xDistance, yDistance);
+
+      if (distanceOne < 5 + 25) {
+        destroyEnemy(x, y);
       }
     }
-  //}
+  }
   
   if (special) {
     for (var x = 0; x < enemyContainer.children.length; x++)  {
@@ -94,7 +95,7 @@ function tick(event) {
     specialContainer.children[0].radius += 5;
     increaseSuperSonic(specialContainer.children[0], specialContainer.children[0].radius);
  
-    if (sonic.radius > stage.canvas.width) {
+    if (sonic.radius >= stage.canvas.width) {
       createjs.Tween.get(specialContainer.children[0])
         .to({alpha:0, visible:false}, 100);
       specialContainer.removeChildAt(0);
@@ -143,8 +144,8 @@ function createEnemy(enemy) {
 function addEnemy() {
   var enemy = new createjs.Shape();
   enemy.graphics.beginFill('black').drawCircle(0, 0, 25);
-  enemy.x = Math.random() * stage.canvas.width;
-  enemy.y = Math.random() * stage.canvas.height;
+  enemy.x = getRandomIntInclusive(26,474);
+  enemy.y = getRandomIntInclusive(26,474);
   enemy.alpha = 0;
 
   enemies.push(new createEnemy(enemy));
@@ -167,7 +168,7 @@ function addEnemy() {
   }*/
 }
 
-/*** Projectile Funcdtions ***/
+/*** Projectile Functions ***/
 function shoot() {
   var shot = new createjs.Shape();
   shot.graphics.beginFill('black').drawCircle(0, 0, 5);
@@ -194,24 +195,17 @@ function moveProjectiles(element, index, array) {
     bulletContainer.removeChildAt(index);
 }
 
-function pythagorus(a, b) {
-  return Math.sqrt(Math.pow(a, 2) +  Math.pow(b, 2));
-}
-
-function incrementScore(amount) {
-  score += amount;
-}
-
-function cleanContainers(bulletIndex, enemyIndex) {
-  if (bulletIndex === null) {
-    console.log(enemyContainer.removeChildAt(enemyIndex));
+function shipCollision(enemy) {
+  var xTriDistance = triangle.x - enemy.x;
+  var yTriDistance = triangle.y - enemy.y;
+  var distanceTwo = pythagorus(xTriDistance, yTriDistance);
+  if (distanceTwo < 15 + 25) {
+    destroyEnemy(null, enemyContainer.getChildIndex(enemy));
   }
-  else {
-    console.log(enemyContainer.removeChildAt(enemyIndex));
-    console.log(bulletContainer.removeChildAt(bulletIndex));
-  }
+
 }
 
+/** Background Functions **/
 function moveBackground(element, index, array) {
   sphereContainer.children[index].y -= spheres[index].rise;
   
@@ -220,20 +214,6 @@ function moveBackground(element, index, array) {
   
   if (array[index].y < -15)
     sphereContainer.removeChildAt(index);
-}
-
-function handleComplete() {
-  for (var x = 0; x < enemyContainer.children.length; x++) {
-    //**Check width boundaries**//
-    if (enemyContainer.children[x].y < 25 || enemyContainer.children[x].y + 25 > stage.canvas.height) {
-      enemies[x].yDirection = -(enemies[x].yDirection);
-    }
-    
-    //**Check height boundaries**//
-    if (enemyContainer.children[x].x < 25 || enemyContainer.children[x].x + 25 > stage.canvas.width) {
-      enemies[x].xDirection = -(enemies[x].xDirection);
-    }
-  }
 }
 
 function addSphere() {
@@ -255,33 +235,31 @@ function createSphere(sphere) {
   this.rise = getRandomIntInclusive(1, 5); 
 }
 
-function getRandomIntInclusive(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function particleEmitter() {
-  
-}
-
+/** Particle Functions **/
 function moveParticles(element, index, array) {
   particleContainer.children[index].x += (particles[index].run * particles[index].xDirection);
   particleContainer.children[index].y += (particles[index].rise * particles[index].yDirection);
+  particleContainer.children[index].rotation++;
 }
 
 function addParticles(x, y, amount) {
   while (amount > 0) {
   var particle = new createjs.Shape();
-  
-  if (getRandomIntInclusive(0, 1) > 0) {
+  var randInt = getRandomIntInclusive(0, 2);
+
+  if (randInt === 0) {
     particle.graphics.setStrokeStyle(1).beginStroke(createjs.Graphics.getHSL(Math.random()*360,100,50)).drawCircle(0, 0, getRandomIntInclusive(5, 25));
   }
-  else {
+  else if (randInt === 1) {
     particle.graphics.beginFill(createjs.Graphics.getHSL(Math.random()*360,100,50)).drawCircle(0, 0, getRandomIntInclusive(5, 25));
     var blurFilter = new createjs.BlurFilter(5, 5, 1);
     particle.filters = [blurFilter];
     var bounds = blurFilter.getBounds();
       
     particle.cache(-50+bounds.x, -50+bounds.y, 100+bounds.width, 100+bounds.height);
+  }
+  else {
+    particle.graphics.beginFill("#FF0").drawPolyStar(0, 0,  getRandomIntInclusive(5, 15), 5, 0.5, -90);
   }
   
   particle.x = x;
@@ -334,6 +312,42 @@ function superSonic() {
 
 function increaseSuperSonic(aShape, radius) {
   aShape.graphics.setStrokeStyle(10).beginStroke(createjs.Graphics.getHSL(Math.random()*360,100,50)).drawCircle(0, 0, radius);
+}
+
+function handleComplete() {
+  for (var x = 0; x < enemyContainer.children.length; x++) {
+    //**Check width boundaries**//
+    if (enemyContainer.children[x].y < 25 || enemyContainer.children[x].y + 25 > stage.canvas.height) {
+      enemies[x].yDirection = -(enemies[x].yDirection);
+    }
+    
+    //**Check height boundaries**//
+    if (enemyContainer.children[x].x < 25 || enemyContainer.children[x].x + 25 > stage.canvas.width) {
+      enemies[x].xDirection = -(enemies[x].xDirection);
+    }
+  }
+}
+
+function getRandomIntInclusive(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function pythagorus(a, b) {
+  return Math.sqrt(Math.pow(a, 2) +  Math.pow(b, 2));
+}
+
+function incrementScore(amount) {
+  score += amount;
+}
+
+function cleanContainers(bulletIndex, enemyIndex) {
+  if (bulletIndex === null) {
+    console.log(enemyContainer.removeChildAt(enemyIndex));
+  }
+  else {
+    console.log(enemyContainer.removeChildAt(enemyIndex));
+    console.log(bulletContainer.removeChildAt(bulletIndex));
+  }
 }
 
 $(document).keydown(function(event) {

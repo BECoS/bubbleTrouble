@@ -50,11 +50,7 @@ this.createjs = this.createjs||{};
  * 	console.log(foo instanceof MySuperClass); // true
  * 	console.log(foo.prototype.constructor === MySubClass); // true
  *
-<<<<<<< HEAD
  * @method extend
-=======
- * @method extends
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
  * @param {Function} subclass The subclass.
  * @param {Function} superclass The superclass to extend.
  * @return {Function} Returns the subclass's new prototype.
@@ -262,7 +258,6 @@ this.createjs = this.createjs||{};
 		this.removed = false;
 	}
 	var p = Event.prototype;
-<<<<<<< HEAD
 
 	/**
 	 * <strong>REMOVED</strong>. Removed in favor of using `MySuperClass_constructor`.
@@ -276,8 +271,6 @@ this.createjs = this.createjs||{};
 	 * @deprecated
 	 */
 	// p.initialize = function() {}; // searchable for devs wondering where it is.
-=======
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	
 
 // public methods:
@@ -437,7 +430,6 @@ this.createjs = this.createjs||{};
 	}
 	var p = EventDispatcher.prototype;
 
-<<<<<<< HEAD
 	/**
 	 * <strong>REMOVED</strong>. Removed in favor of using `MySuperClass_constructor`.
 	 * See {{#crossLink "Utility Methods/extend"}}{{/crossLink}} and {{#crossLink "Utility Methods/promote"}}{{/crossLink}}
@@ -451,8 +443,6 @@ this.createjs = this.createjs||{};
 	 */
 	// p.initialize = function() {}; // searchable for devs wondering where it is.
 
-=======
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 // static public methods:
 	/**
@@ -783,24 +773,15 @@ this.createjs = this.createjs||{};
 	 * uses a simple heuristic that compares the time of the RAF return to the target time for the current frame and
 	 * dispatches the tick when the time is within a certain threshold.
 	 *
-<<<<<<< HEAD
 	 * This mode has a higher variance for time between frames than {{#crossLink "Ticker/TIMEOUT:property"}}{{/crossLink}},
 	 * but does not require that content be time based as with {{#crossLink "Ticker/RAF:property"}}{{/crossLink}} while
 	 * gaining the benefits of that API (screen synch, background throttling).
-=======
-	 * This mode has a higher variance for time between frames than TIMEOUT, but does not require that content be time
-	 * based as with RAF while gaining the benefits of that API (screen synch, background throttling).
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 *
 	 * Variance is usually lowest for framerates that are a divisor of the RAF frequency. This is usually 60, so
 	 * framerates of 10, 12, 15, 20, and 30 work well.
 	 *
-<<<<<<< HEAD
 	 * Falls back to {{#crossLink "Ticker/TIMEOUT:property"}}{{/crossLink}} if the requestAnimationFrame API is not
 	 * supported.
-=======
-	 * Falls back on TIMEOUT if the requestAnimationFrame API is not supported.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @property RAF_SYNCHED
 	 * @static
 	 * @type {String}
@@ -812,18 +793,11 @@ this.createjs = this.createjs||{};
 	/**
 	 * In this mode, Ticker passes through the requestAnimationFrame heartbeat, ignoring the target framerate completely.
 	 * Because requestAnimationFrame frequency is not deterministic, any content using this mode should be time based.
-<<<<<<< HEAD
 	 * You can leverage {{#crossLink "Ticker/getTime"}}{{/crossLink}} and the {{#crossLink "Ticker/tick:event"}}{{/crossLink}}
 	 * event object's "delta" properties to make this easier.
 	 *
 	 * Falls back on {{#crossLink "Ticker/TIMEOUT:property"}}{{/crossLink}} if the requestAnimationFrame API is not
 	 * supported.
-=======
-	 * You can leverage {{#crossLink "Ticker/getTime"}}{{/crossLink}} and the tick event object's "delta" properties
-	 * to make this easier.
-	 *
-	 * Falls back on TIMEOUT if the requestAnimationFrame API is not supported.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @property RAF
 	 * @static
 	 * @type {String}
@@ -838,11 +812,7 @@ this.createjs = this.createjs||{};
 	 * @property TIMEOUT
 	 * @static
 	 * @type {String}
-<<<<<<< HEAD
 	 * @default "timeout"
-=======
-	 * @default "timer"
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @readonly
 	 **/
 	Ticker.TIMEOUT = "timeout";
@@ -867,11 +837,7 @@ this.createjs = this.createjs||{};
 	 * @param {Number} delta The time elapsed in ms since the last tick.
 	 * @param {Number} time The total time in ms since Ticker was initialized.
 	 * @param {Number} runTime The total time in ms that Ticker was not paused since it was initialized. For example,
-<<<<<<< HEAD
 	 * 	you could determine the amount of time that the Ticker has been paused since initialization with `time-runTime`.
-=======
-	 * 	you could determine the amount of time that the Ticker has been paused since initialization with time-runTime.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @since 0.6.0
 	 */
 
@@ -917,16 +883,10 @@ this.createjs = this.createjs||{};
 	Ticker.maxDelta = 0;
 	
 	/**
-<<<<<<< HEAD
 	 * When the ticker is paused, all listeners will still receive a tick event, but the <code>paused</code> property
 	 * of the event will be `true`. Also, while paused the `runTime` will not increase. See {{#crossLink "Ticker/tick:event"}}{{/crossLink}},
 	 * {{#crossLink "Ticker/getTime"}}{{/crossLink}}, and {{#crossLink "Ticker/getEventTime"}}{{/crossLink}} for more
 	 * info.
-=======
-	 * When the ticker is paused, all listeners will still receive a tick event, but the <code>paused</code> property of the event will be false.
-	 * Also, while paused the `runTime` will not increase. See {{#crossLink "Ticker/tick:event"}}{{/crossLink}},
-	 * {{#crossLink "Ticker/getTime"}}{{/crossLink}}, and {{#crossLink "Ticker/getEventTime"}}{{/crossLink}} for more info.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 *
 	 * <h4>Example</h4>
 	 *
@@ -1398,11 +1358,7 @@ this.createjs = this.createjs||{};
 	 * <h4>Example</h4>
 	 *
 	 *      target.alpha = 1;
-<<<<<<< HEAD
 	 *	    createjs.Tween.get(target)
-=======
-	 *	    Tween.get(target)
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 *	         .wait(500)
 	 *	         .to({alpha:0, visible:false}, 1000)
 	 *	         .call(handleComplete);
@@ -1411,7 +1367,6 @@ this.createjs = this.createjs||{};
 	 *	    }
 	 *
 	 * Multiple tweens can point to the same instance, however if they affect the same properties there could be unexpected
-<<<<<<< HEAD
 	 * behaviour. To stop all tweens on an object, use {{#crossLink "Tween/removeTweens"}}{{/crossLink}} or pass `override:true`
 	 * in the props argument.
 	 *
@@ -1421,16 +1376,6 @@ this.createjs = this.createjs||{};
 	 * target is changed.
 	 *
 	 *      createjs.Tween.get(target, {override:true}).to({x:100}).addEventListener("change", handleChange);
-=======
-	 * behaviour. To stop all tweens on an object, use {{#crossLink "Tween/removeTweens"}}{{/crossLink}} or pass <code>override:true</code>
-	 * in the props argument.
-	 *
-	 *      Tween.get(target, {override:true}).to({x:100});
-	 *
-	 * Subscribe to the "change" event to get notified when a property of the target is changed.
-	 *
-	 *      Tween.get(target, {override:true}).to({x:100}).addEventListener("change", handleChange);
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 *      function handleChange(event) {
 	 *          // The tween changed.
 	 *      }
@@ -1476,20 +1421,13 @@ this.createjs = this.createjs||{};
 		this.loop = false;
 	
 		/**
-<<<<<<< HEAD
 		 * Specifies the total duration of this tween in milliseconds (or ticks if useTicks is true).
-=======
-		 * Read-only. Specifies the total duration of this tween in milliseconds (or ticks if useTicks is true).
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		 * This value is automatically updated as you modify the tween. Changing it directly could result in unexpected
 		 * behaviour.
 		 * @property duration
 		 * @type {Number}
 		 * @default 0
-<<<<<<< HEAD
 		 * @readonly
-=======
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		 */
 		this.duration = 0;
 	
@@ -1511,49 +1449,29 @@ this.createjs = this.createjs||{};
 		this.pluginData = pluginData || {};
 	
 		/**
-<<<<<<< HEAD
 		 * The target of this tween. This is the object on which the tweened properties will be changed. Changing
 		 * this property after the tween is created will not have any effect.
 		 * @property target
 		 * @type {Object}
 		 * @readonly
-=======
-		 * Read-only. The target of this tween. This is the object on which the tweened properties will be changed. Changing
-		 * this property after the tween is created will not have any effect.
-		 * @property target
-		 * @type {Object}
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		 */
 		this.target = target;
 	
 		/**
-<<<<<<< HEAD
 		 * The current normalized position of the tween. This will always be a value between 0 and duration.
 		 * Changing this property directly will have no effect.
 		 * @property position
 		 * @type {Object}
 		 * @readonly
-=======
-		 * Read-only. The current normalized position of the tween. This will always be a value between 0 and duration.
-		 * Changing this property directly will have no effect.
-		 * @property position
-		 * @type {Object}
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		 */
 		this.position = null;
 	
 		/**
-<<<<<<< HEAD
 		 * Indicates the tween's current position is within a passive wait.
 		 * @property passive
 		 * @type {Boolean}
 		 * @default false
 		 * @readonly
-=======
-		 * Read-only. Indicates the tween's current position is within a passive wait.
-		 * @property passive
-		 * @type {Boolean}
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		 **/
 		this.passive = false;
 	
@@ -1604,21 +1522,13 @@ this.createjs = this.createjs||{};
 		this._prevPosition = 0;
 	
 		/**
-<<<<<<< HEAD
 		 * The position within the current step.
-=======
-		 * The position within the current stethis.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		 * @property _stepPosition
 		 * @type {Number}
 		 * @default 0
 		 * @protected
 		 */
-<<<<<<< HEAD
 		this._stepPosition = 0; // this is needed by MovieClip.
-=======
-		this._stepPosition = 0; // this is needed by MovieClithis.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	
 		/**
 		 * Normalized position.
@@ -1651,7 +1561,6 @@ this.createjs = this.createjs||{};
 		 * @protected
 		 */
 		this._inited = false;
-<<<<<<< HEAD
 		
 		/**
 		 * Indicates whether the tween is currently registered with Tween.
@@ -1661,8 +1570,6 @@ this.createjs = this.createjs||{};
 		 * @protected
 		 */
 		this._registered = false;
-=======
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 
 		if (props) {
@@ -1679,12 +1586,9 @@ this.createjs = this.createjs||{};
 	};
 
 	var p = createjs.extend(Tween, createjs.EventDispatcher);
-<<<<<<< HEAD
 
 	// TODO: deprecated
 	// p.initialize = function() {}; // searchable for devs wondering where it is. REMOVED. See docs for details.
-=======
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	
 
 // static properties
@@ -1744,7 +1648,6 @@ this.createjs = this.createjs||{};
 	/**
 	 * Returns a new tween instance. This is functionally identical to using "new Tween(...)", but looks cleaner
 	 * with the chained syntax of TweenJS.
-<<<<<<< HEAD
 	 * <h4>Example</h4>
 	 *
 	 *		var tween = createjs.Tween.get(target);
@@ -1768,26 +1671,6 @@ this.createjs = this.createjs||{};
 	 * documentation for details.
 	 * @param {Boolean} [override=false] If true, any previous tweens on the same target will be removed. This is the
 	 * same as calling `Tween.removeTweens(target)`.
-=======
-	 * @example
-	 *	var tween = createjs.Tween.get(target);
-	 * @method get
-	 * @param {Object} target The target object that will have its properties tweened.
-	 * @param {Object} [props] The configuration properties to apply to this tween instance (ex. <code>{loop:true, paused:true}</code>).
-	 * All properties default to false. Supported props are:<UL>
-	 *    <LI> loop: sets the loop property on this tween.</LI>
-	 *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
-	 *    <LI> ignoreGlobalPause: sets the {{#crossLink "Tween/ignoreGlobalPause:property"}}{{/crossLink}} property on this tween.</LI>
-	 *    <LI> override: if true, Tween.removeTweens(target) will be called to remove any other tweens with the same target.
-	 *    <LI> paused: indicates whether to start the tween paused.</LI>
-	 *    <LI> position: indicates the initial position for this tween.</LI>
-	 *    <LI> onChange: specifies a listener for the "change" event.</LI>
-	 * </UL>
-	 * @param {Object} [pluginData] An object containing data for use by installed plugins. See individual
-	 * plugins' documentation for details.
-	 * @param {Boolean} [override=false] If true, any previous tweens on the same target will be removed. This is the same as
-	 * calling <code>Tween.removeTweens(target)</code>.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @return {Tween} A reference to the created tween. Additional chained tweens, method calls, or callbacks can be
 	 * applied to the returned tween instance.
 	 * @static
@@ -1802,11 +1685,7 @@ this.createjs = this.createjs||{};
 	 * manually if you prefer to use your own "heartbeat" implementation.
 	 * @method tick
 	 * @param {Number} delta The change in time in milliseconds since the last tick. Required unless all tweens have
-<<<<<<< HEAD
 	 * `useTicks` set to true.
-=======
-	 * <code>useTicks</code> set to true.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @param {Boolean} paused Indicates whether a global pause is in effect. Tweens with {{#crossLink "Tween/ignoreGlobalPause:property"}}{{/crossLink}}
 	 * will ignore this, but all others will pause if this is `true`.
 	 * @static
@@ -1822,12 +1701,8 @@ this.createjs = this.createjs||{};
 
 	/**
 	 * Handle events that result from Tween being used as an event handler. This is included to allow Tween to handle
-<<<<<<< HEAD
 	 * {{#crossLink "Ticker/tick:event"}}{{/crossLink}} events from the createjs {{#crossLink "Ticker"}}{{/crossLink}}.
 	 * No other events are handled in Tween.
-=======
-	 * tick events from <code>createjs.Ticker</code>. No other events are handled in Tween.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @method handleEvent
 	 * @param {Object} event An event object passed in by the {{#crossLink "EventDispatcher"}}{{/crossLink}}. Will
 	 * usually be of type "tick".
@@ -1842,13 +1717,8 @@ this.createjs = this.createjs||{};
 	};
 
 	/**
-<<<<<<< HEAD
 	 * Removes all existing tweens for a target. This is called automatically by new tweens if the `override`
 	 * property is `true`.
-=======
-	 * Removes all existing tweens for a target. This is called automatically by new tweens if the <code>override</code>
-	 * property is <code>true</code>.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @method removeTweens
 	 * @param {Object} target The target object to remove existing tweens from.
 	 * @static
@@ -1877,11 +1747,7 @@ this.createjs = this.createjs||{};
 		for (var i= 0, l=tweens.length; i<l; i++) {
 			var tween = tweens[i];
 			tween._paused = true;
-<<<<<<< HEAD
 			tween.target&&(tween.target.tweenjs_count = 0);
-=======
-			tween.target.tweenjs_count = 0;
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		}
 		tweens.length = 0;
 	};
@@ -1895,11 +1761,7 @@ this.createjs = this.createjs||{};
 	 * @static
 	 */
 	Tween.hasActiveTweens = function(target) {
-<<<<<<< HEAD
 		if (target) { return target.tweenjs_count != null && !!target.tweenjs_count; }
-=======
-		if (target) { return target.tweenjs_count; }
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		return Tween._tweens && !!Tween._tweens.length;
 	};
 
@@ -1931,48 +1793,29 @@ this.createjs = this.createjs||{};
 	 * Registers or unregisters a tween with the ticking system.
 	 * @method _register
 	 * @param {Tween} tween The tween instance to register or unregister.
-<<<<<<< HEAD
 	 * @param {Boolean} value If `true`, the tween is registered. If `false` the tween is unregistered.
-=======
-	 * @param {Boolean} value If true, the tween is registered. If false the tween is unregistered.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @static
 	 * @protected
 	 */
 	Tween._register = function(tween, value) {
 		var target = tween._target;
 		var tweens = Tween._tweens;
-<<<<<<< HEAD
 		if (value && !tween._registered) {
-=======
-		if (value) {
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 			// TODO: this approach might fail if a dev is using sealed objects in ES5
 			if (target) { target.tweenjs_count = target.tweenjs_count ? target.tweenjs_count+1 : 1; }
 			tweens.push(tween);
 			if (!Tween._inited && createjs.Ticker) { createjs.Ticker.addEventListener("tick", Tween); Tween._inited = true; }
-<<<<<<< HEAD
 		} else if (!value && tween._registered) {
-=======
-		} else {
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 			if (target) { target.tweenjs_count--; }
 			var i = tweens.length;
 			while (i--) {
 				if (tweens[i] == tween) {
 					tweens.splice(i, 1);
-<<<<<<< HEAD
 					break;
 				}
 			}
 		}
 		tween._registered = value;
-=======
-					return;
-				}
-			}
-		}
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	};
 
 
@@ -1987,7 +1830,6 @@ this.createjs = this.createjs||{};
 // public methods:
 	/**
 	 * Queues a wait (essentially an empty tween).
-<<<<<<< HEAD
 	 * <h4>Example</h4>
 	 *
 	 *		//This tween will wait 1s before alpha is faded to 0.
@@ -1998,16 +1840,6 @@ this.createjs = this.createjs||{};
 	 * @param {Boolean} [passive] Tween properties will not be updated during a passive wait. This
 	 * is mostly useful for use with {{#crossLink "Timeline"}}{{/crossLink}} instances that contain multiple tweens
 	 * affecting the same target at different times.
-=======
-	 * @example
-	 *	//This tween will wait 1s before alpha is faded to 0.
-	 *	createjs.Tween.get(target).wait(1000).to({alpha:0}, 1000);
-	 * @method wait
-	 * @param {Number} duration The duration of the wait in milliseconds (or in ticks if <code>useTicks</code> is true).
-	 * @param {Boolean} passive Tween properties will not be updated during a passive wait. This
-	 * is mostly useful for use with Timeline's that contain multiple tweens affecting the same target
-	 * at different times.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @return {Tween} This tween instance (for chaining calls).
 	 **/
 	p.wait = function(duration, passive) {
@@ -2020,7 +1852,6 @@ this.createjs = this.createjs||{};
 	 * Queues a tween from the current values to the target properties. Set duration to 0 to jump to these value.
 	 * Numeric properties will be tweened from their current value in the tween to the target value. Non-numeric
 	 * properties will be set at the end of the specified duration.
-<<<<<<< HEAD
 	 * <h4>Example</h4>
 	 *
 	 *		createjs.Tween.get(target).to({alpha:0}, 1000);
@@ -2031,16 +1862,6 @@ this.createjs = this.createjs||{};
 	 * @param {Number} [duration=0] The duration of the wait in milliseconds (or in ticks if `useTicks` is true).
 	 * @param {Function} [ease="linear"] The easing function to use for this tween. See the {{#crossLink "Ease"}}{{/crossLink}}
 	 * class for a list of built-in ease functions.
-=======
-	 * @example
-	 *	createjs.Tween.get(target).to({alpha:0}, 1000);
-	 * @method to
-	 * @param {Object} props An object specifying property target values for this tween (Ex. <code>{x:300}</code> would tween the x
-	 *      property of the target to 300).
-	 * @param {Number} duration Optional. The duration of the wait in milliseconds (or in ticks if <code>useTicks</code> is true).
-	 *      Defaults to 0.
-	 * @param {Function} ease Optional. The easing function to use for this tween. Defaults to a linear ease.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @return {Tween} This tween instance (for chaining calls).
 	 */
 	p.to = function(props, duration, ease) {
@@ -2050,7 +1871,6 @@ this.createjs = this.createjs||{};
 
 	/**
 	 * Queues an action to call the specified function.
-<<<<<<< HEAD
 	 * <h4>Example</h4>
 	 *
 	 *   	//would call myFunction() after 1 second.
@@ -2061,16 +1881,6 @@ this.createjs = this.createjs||{};
 	 * @param {Array} [params]. The parameters to call the function with. If this is omitted, then the function
 	 *      will be called with a single param pointing to this tween.
 	 * @param {Object} [scope]. The scope to call the function in. If omitted, it will be called in the target's
-=======
-	 *	@example
-	 *   	//would call myFunction() after 1s.
-	 *   	myTween.wait(1000).call(myFunction);
-	 * @method call
-	 * @param {Function} callback The function to call.
-	 * @param {Array} params Optional. The parameters to call the function with. If this is omitted, then the function
-	 *      will be called with a single param pointing to this tween.
-	 * @param {Object} scope Optional. The scope to call the function in. If omitted, it will be called in the target's
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 *      scope.
 	 * @return {Tween} This tween instance (for chaining calls).
 	 */
@@ -2082,7 +1892,6 @@ this.createjs = this.createjs||{};
 	/**
 	 * Queues an action to set the specified props on the specified target. If target is null, it will use this tween's
 	 * target.
-<<<<<<< HEAD
 	 * <h4>Example</h4>
 	 *
 	 *		myTween.wait(1000).set({visible:false},foo);
@@ -2090,13 +1899,6 @@ this.createjs = this.createjs||{};
 	 * @method set
 	 * @param {Object} props The properties to set (ex. `{visible:false}`).
 	 * @param {Object} [target] The target to set the properties on. If omitted, they will be set on the tween's target.
-=======
-	 * @example
-	 *	myTween.wait(1000).set({visible:false},foo);
-	 * @method set
-	 * @param {Object} props The properties to set (ex. <code>{visible:false}</code>).
-	 * @param {Object} target Optional. The target to set the properties on. If omitted, they will be set on the tween's target.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @return {Tween} This tween instance (for chaining calls).
 	 */
 	p.set = function(props, target) {
@@ -2104,17 +1906,11 @@ this.createjs = this.createjs||{};
 	};
 
 	/**
-<<<<<<< HEAD
 	 * Queues an action to play (unpause) the specified tween. This enables you to sequence multiple tweens.
 	 * <h4>Example</h4>
 	 *
 	 *		myTween.to({x:100},500).play(otherTween);
 	 *
-=======
-	 * Queues an action to to play (unpause) the specified tween. This enables you to sequence multiple tweens.
-	 * @example
-	 *	myTween.to({x:100},500).play(otherTween);
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @method play
 	 * @param {Tween} tween The tween to play.
 	 * @return {Tween} This tween instance (for chaining calls).
@@ -2125,15 +1921,9 @@ this.createjs = this.createjs||{};
 	};
 
 	/**
-<<<<<<< HEAD
 	 * Queues an action to pause the specified tween.
 	 * @method pause
 	 * @param {Tween} tween The tween to pause. If null, it pauses this tween.
-=======
-	 * Queues an action to to pause the specified tween.
-	 * @method pause
-	 * @param {Tween} tween The tween to play. If null, it pauses this tween.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @return {Tween} This tween instance (for chaining calls)
 	 */
 	p.pause = function(tween) {
@@ -2145,7 +1935,6 @@ this.createjs = this.createjs||{};
 	 * Advances the tween to a specified position.
 	 * @method setPosition
 	 * @param {Number} value The position to seek to in milliseconds (or ticks if useTicks is true).
-<<<<<<< HEAD
 	 * @param {Number} [actionsMode=1] Specifies how actions are handled (ie. call, set, play, pause):
 	 * <ul>
 	 *      <li>{{#crossLink "Tween/NONE:property"}}{{/crossLink}} (0) - run no actions.</li>
@@ -2156,13 +1945,6 @@ this.createjs = this.createjs||{};
 	 * </ul>
 	 * @return {Boolean} Returns `true` if the tween is complete (ie. the full tween has run & {{#crossLink "Tween/loop:property"}}{{/crossLink}}
 	 * is `false`).
-=======
-	 * @param {Number} actionsMode Optional parameter specifying how actions are handled (ie. call, set, play, pause):
-	 *      <code>Tween.NONE</code> (0) - run no actions. <code>Tween.LOOP</code> (1) - if new position is less than old, then run all actions
-	 *      between old and duration, then all actions between 0 and new. Defaults to <code>LOOP</code>. <code>Tween.REVERSE</code> (2) - if new
-	 *      position is less than old, run all actions between them in reverse.
-	 * @return {Boolean} Returns true if the tween is complete (ie. the full tween has run & loop is false).
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 */
 	p.setPosition = function(value, actionsMode) {
 		if (value < 0) { value = 0; }
@@ -2220,19 +2002,11 @@ this.createjs = this.createjs||{};
 	};
 
 	/**
-<<<<<<< HEAD
 	 * Advances this tween by the specified amount of time in milliseconds (or ticks if`useTicks` is `true`).
 	 * This is normally called automatically by the Tween engine (via {{#crossLink "Tween/tick"}}{{/crossLink}}), but is
 	 * exposed for advanced uses.
 	 * @method tick
 	 * @param {Number} delta The time to advance in milliseconds (or ticks if `useTicks` is `true`).
-=======
-	 * Advances this tween by the specified amount of time in milliseconds (or ticks if <code>useTicks</code> is true).
-	 * This is normally called automatically by the Tween engine (via <code>Tween.tick</code>), but is exposed for
-	 * advanced uses.
-	 * @method tick
-	 * @param {Number} delta The time to advance in milliseconds (or ticks if <code>useTicks</code> is true).
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 */
 	p.tick = function(delta) {
 		if (this._paused) { return; }
@@ -2242,11 +2016,7 @@ this.createjs = this.createjs||{};
 	/**
 	 * Pauses or plays this tween.
 	 * @method setPaused
-<<<<<<< HEAD
 	 * @param {Boolean} [value=true] Indicates whether the tween should be paused (`true`) or played (`false`).
-=======
-	 * @param {Boolean} value Indicates whether the tween should be paused (true) or played (false).
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @return {Tween} This tween instance (for chaining calls)
 	 */
 	p.setPaused = function(value) {
@@ -2441,10 +2211,6 @@ this.createjs = this.createjs||{};
 		}
 	};
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	createjs.Tween = createjs.promote(Tween, "EventDispatcher");
 
 }());
@@ -2465,12 +2231,8 @@ this.createjs = this.createjs||{};
 	 * The Timeline class synchronizes multiple tweens and allows them to be controlled as a group. Please note that if a
 	 * timeline is looping, the tweens on it may appear to loop even if the "loop" property of the tween is false.
 	 * @class Timeline
-<<<<<<< HEAD
 	 * @param {Array} tweens An array of Tweens to add to this timeline. See {{#crossLink "Timeline/addTween"}}{{/crossLink}}
 	 * for more info.
-=======
-	 * @param {Array} tweens An array of Tweens to add to this timeline. See addTween for more info.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @param {Object} labels An object defining labels for using {{#crossLink "Timeline/gotoAndPlay"}}{{/crossLink}}/{{#crossLink "Timeline/gotoAndStop"}}{{/crossLink}}.
 	 * See {{#crossLink "Timeline/setLabels"}}{{/crossLink}}
 	 * for details.
@@ -2498,7 +2260,6 @@ this.createjs = this.createjs||{};
 		this.ignoreGlobalPause = false;
 
 		/**
-<<<<<<< HEAD
 		 * The total duration of this timeline in milliseconds (or ticks if `useTicks `is `true`). This value is usually
 		 * automatically updated as you modify the timeline. See {{#crossLink "Timeline/updateDuration"}}{{/crossLink}}
 		 * for more information.
@@ -2506,12 +2267,6 @@ this.createjs = this.createjs||{};
 		 * @type Number
 		 * @default 0
 		 * @readonly
-=======
-		 * Read-only property specifying the total duration of this timeline in milliseconds (or ticks if useTicks is true).
-		 * This value is usually automatically updated as you modify the timeline. See updateDuration for more information.
-		 * @property duration
-		 * @type Number
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		 **/
 		this.duration = 0;
 
@@ -2523,19 +2278,12 @@ this.createjs = this.createjs||{};
 		this.loop = false;
 
 		/**
-<<<<<<< HEAD
 		 * The current normalized position of the timeline. This will always be a value between 0 and
 		 * {{#crossLink "Timeline/duration:property"}}{{/crossLink}}.
 		 * Changing this property directly will have no effect.
 		 * @property position
 		 * @type Object
 		 * @readonly
-=======
-		 * Read-only. The current normalized position of the timeline. This will always be a value between 0 and duration.
-		 * Changing this property directly will have no effect.
-		 * @property position
-		 * @type Object
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		 **/
 		this.position = null;
 
@@ -2591,7 +2339,6 @@ this.createjs = this.createjs||{};
 		 * @protected
 		 **/
 		this._useTicks = false;
-<<<<<<< HEAD
 		
 		/**
 		 * Indicates whether the timeline is currently registered with Tween.
@@ -2601,8 +2348,6 @@ this.createjs = this.createjs||{};
 		 * @protected
 		 */
 		this._registered = false;
-=======
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 
 		if (props) {
@@ -2621,12 +2366,9 @@ this.createjs = this.createjs||{};
 	
 	var p = createjs.extend(Timeline, createjs.EventDispatcher);
 
-<<<<<<< HEAD
 	// TODO: deprecated
 	// p.initialize = function() {}; // searchable for devs wondering where it is. REMOVED. See docs for details.
 
-=======
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	
 // events:
 	/**
@@ -2638,20 +2380,12 @@ this.createjs = this.createjs||{};
 
 // public methods:
 	/**
-<<<<<<< HEAD
 	 * Adds one or more tweens (or timelines) to this timeline. The tweens will be paused (to remove them from the
 	 * normal ticking system) and managed by this timeline. Adding a tween to multiple timelines will result in
 	 * unexpected behaviour.
 	 * @method addTween
 	 * @param {Tween} ...tween The tween(s) to add. Accepts multiple arguments.
 	 * @return {Tween} The first tween that was passed in.
-=======
-	 * Adds one or more tweens (or timelines) to this timeline. The tweens will be paused (to remove them from the normal ticking system)
-	 * and managed by this timeline. Adding a tween to multiple timelines will result in unexpected behaviour.
-	 * @method addTween
-	 * @param tween The tween(s) to add. Accepts multiple arguments.
-	 * @return Tween The first tween that was passed in.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	p.addTween = function(tween) {
 		var l = arguments.length;
@@ -2672,13 +2406,8 @@ this.createjs = this.createjs||{};
 	/**
 	 * Removes one or more tweens from this timeline.
 	 * @method removeTween
-<<<<<<< HEAD
 	 * @param {Tween} ...tween The tween(s) to remove. Accepts multiple arguments.
 	 * @return Boolean Returns `true` if all of the tweens were successfully removed.
-=======
-	 * @param tween The tween(s) to remove. Accepts multiple arguments.
-	 * @return Boolean Returns true if all of the tweens were successfully removed.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	p.removeTween = function(tween) {
 		var l = arguments.length;
@@ -2718,13 +2447,8 @@ this.createjs = this.createjs||{};
 	/**
 	 * Defines labels for use with gotoAndPlay/Stop. Overwrites any previously set labels.
 	 * @method setLabels
-<<<<<<< HEAD
 	 * @param {Object} o An object defining labels for using {{#crossLink "Timeline/gotoAndPlay"}}{{/crossLink}}/{{#crossLink "Timeline/gotoAndStop"}}{{/crossLink}}
 	 * in the form `{labelName:time}` where time is in milliseconds (or ticks if `useTicks` is `true`).
-=======
-	 * @param {Object} o An object defining labels for using gotoAndPlay/Stop in the form `{labelName:time}` where time is in
-	 * milliseconds (or ticks if `useTicks` is true).
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	p.setLabels = function(o) {
 		this._labels = o ?  o : {};
@@ -2750,7 +2474,6 @@ this.createjs = this.createjs||{};
 
 	/**
 	 * Returns the name of the label on or immediately before the current position. For example, given a timeline with
-<<<<<<< HEAD
 	 * two labels, "first" on frame index 4, and "second" on frame 8, getCurrentLabel would return:
 	 * <UL>
 	 * 		<LI>null if the current position is 2.</LI>
@@ -2758,13 +2481,6 @@ this.createjs = this.createjs||{};
 	 * 		<LI>"first" if the current position is 7.</LI>
 	 * 		<LI>"second" if the current position is 15.</LI>
 	 * </UL>
-=======
-	 * two labels, "first" on frame index 4, and "second" on frame 8, getCurrentLabel would return:<UL>
-	 * <LI>null if the current position is 2.</LI>
-	 * <LI>"first" if the current position is 4.</LI>
-	 * <LI>"first" if the current position is 7.</LI>
-	 * <LI>"second" if the current position is 15.</LI></UL>
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @method getCurrentLabel
 	 * @return {String} The name of the current label or null if there is no label
 	 **/
@@ -2782,12 +2498,8 @@ this.createjs = this.createjs||{};
 	/**
 	 * Unpauses this timeline and jumps to the specified position or label.
 	 * @method gotoAndPlay
-<<<<<<< HEAD
 	 * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`)
 	 * or label to jump to.
-=======
-	 * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is true) or label to jump to.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	p.gotoAndPlay = function(positionOrLabel) {
 		this.setPaused(false);
@@ -2797,12 +2509,8 @@ this.createjs = this.createjs||{};
 	/**
 	 * Pauses this timeline and jumps to the specified position or label.
 	 * @method gotoAndStop
-<<<<<<< HEAD
 	 * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`) or label
 	 * to jump to.
-=======
-	 * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is true) or label to jump to.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	p.gotoAndStop = function(positionOrLabel) {
 		this.setPaused(true);
@@ -2812,7 +2520,6 @@ this.createjs = this.createjs||{};
 	/**
 	 * Advances the timeline to the specified position.
 	 * @method setPosition
-<<<<<<< HEAD
 	 * @param {Number} value The position to seek to in milliseconds (or ticks if `useTicks` is `true`).
 	 * @param {Number} [actionsMode] parameter specifying how actions are handled. See the Tween {{#crossLink "Tween/setPosition"}}{{/crossLink}}
 	 * method for more details.
@@ -2821,16 +2528,6 @@ this.createjs = this.createjs||{};
 	 **/
 	p.setPosition = function(value, actionsMode) {
 		var t = this._calcPosition(value);
-=======
-	 * @param {Number} value The position to seek to in milliseconds (or ticks if `useTicks` is true).
-	 * @param {Number} [actionsMode] parameter specifying how actions are handled. See the Tween {{#crossLink "Tween/setPosition"}}{{/crossLink}}
-	 * method for more details.
-	 * @return {Boolean} Returns true if the timeline is complete (ie. the full timeline has run & loop is false).
-	 **/
-	p.setPosition = function(value, actionsMode) {
-		if (value < 0) { value = 0; }
-		var t = this.loop ? value%this.duration : value;
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		var end = !this.loop && value >= this.duration;
 		if (t == this._prevPos) { return end; }
 		this._prevPosition = value;
@@ -2847,29 +2544,16 @@ this.createjs = this.createjs||{};
 	/**
 	 * Pauses or plays this timeline.
 	 * @method setPaused
-<<<<<<< HEAD
 	 * @param {Boolean} value Indicates whether the tween should be paused (`true`) or played (`false`).
 	 **/
 	p.setPaused = function(value) {
 		this._paused = !!value; 
-=======
-	 * @param {Boolean} value Indicates whether the tween should be paused (true) or played (false).
-	 **/
-	p.setPaused = function(value) {
-		this._paused = !!value;
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 		createjs.Tween._register(this, !value);
 	};
 
 	/**
-<<<<<<< HEAD
 	 * Recalculates the duration of the timeline. The duration is automatically updated when tweens are added or removed,
 	 * but this method is useful if you modify a tween after it was added to the timeline.
-=======
-	 * Recalculates the duration of the timeline.
-	 * The duration is automatically updated when tweens are added or removed, but this method is useful
-	 * if you modify a tween after it was added to the timeline.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @method updateDuration
 	 **/
 	p.updateDuration = function() {
@@ -2881,14 +2565,9 @@ this.createjs = this.createjs||{};
 	};
 
 	/**
-<<<<<<< HEAD
 	 * Advances this timeline by the specified amount of time in milliseconds (or ticks if `useTicks` is `true`).
 	 * This is normally called automatically by the Tween engine (via the {{#crossLink "Tween/tick:event"}}{{/crossLink}}
 	 * event), but is exposed for advanced uses.
-=======
-	 * Advances this timeline by the specified amount of time in milliseconds (or ticks if useTicks is true).
-	 * This is normally called automatically by the Tween engine (via Tween.tick), but is exposed for advanced uses.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @method tick
 	 * @param {Number} delta The time to advance in milliseconds (or ticks if useTicks is true).
 	 **/
@@ -2898,11 +2577,7 @@ this.createjs = this.createjs||{};
 
 	/**
 	 * If a numeric position is passed, it is returned unchanged. If a string is passed, the position of the
-<<<<<<< HEAD
 	 * corresponding frame label will be returned, or `null` if a matching label is not defined.
-=======
-	 * corresponding frame label will be returned, or null if a matching label is not defined.
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @method resolve
 	 * @param {String|Number} positionOrLabel A numeric position value or label string.
 	 **/
@@ -2932,17 +2607,13 @@ this.createjs = this.createjs||{};
 // private methods:
 	/**
 	 * @method _goto
-<<<<<<< HEAD
 	 * @param {String | Number} positionOrLabel
-=======
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @protected
 	 **/
 	p._goto = function(positionOrLabel) {
 		var pos = this.resolve(positionOrLabel);
 		if (pos != null) { this.setPosition(pos); }
 	};
-<<<<<<< HEAD
 	
 	/**
 	 * @method _calcPosition
@@ -2955,9 +2626,6 @@ this.createjs = this.createjs||{};
 		if (value < this.duration) { return value; }
 		return this.loop ? value%this.duration : this.duration;
 	};
-=======
-
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 	createjs.Timeline = createjs.promote(Timeline, "EventDispatcher");
 
@@ -2984,68 +2652,42 @@ this.createjs = this.createjs||{};
 	 *
 	 *      Tween.get(target).to({y:200}, 500, Ease.getPowIn(2.2));
 	 *
-<<<<<<< HEAD
 	 * Please see the <a href="http://www.createjs.com/Demos/TweenJS/Tween_SparkTable">spark table demo</a> for an
 	 * overview of the different ease types on <a href="http://tweenjs.com">TweenJS.com</a>.
 	 *
 	 * <em>Equations derived from work by Robert Penner.</em>
-=======
-	 * Please see the <a href="http://www.createjs.com/#!/TweenJS/demos/sparkTable">spark table demo</a> for an overview
-	 * of the different ease types on <a href="http://tweenjs.com">TweenJS.com</a>.
-	 *
-	 * <i>Equations derived from work by Robert Penner.</i>
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 * @class Ease
 	 * @static
 	 **/
 	function Ease() {
 		throw "Ease cannot be instantiated.";
-<<<<<<< HEAD
 	}
-=======
-	};
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 
 // static methods and properties
 	/**
 	 * @method linear
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
 	 **/
 	Ease.linear = function(t) { return t; };
-=======
-	 * @static
-	 **/
-	Ease.linear = function(t) { return t; }
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 	/**
 	 * Identical to linear.
 	 * @method none
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.none = Ease.linear;
 
 	/**
 	 * Mimics the simple -100 to 100 easing in Flash Pro.
 	 * @method get
-<<<<<<< HEAD
 	 * @param {Number} amount A value from -1 (ease in) to 1 (ease out) indicating the strength and direction of the ease.
 	 * @static
 	 * @return {Function}
-=======
-	 * @param amount A value from -1 (ease in) to 1 (ease out) indicating the strength and direction of the ease.
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.get = function(amount) {
 		if (amount < -1) { amount = -1; }
@@ -3054,77 +2696,46 @@ this.createjs = this.createjs||{};
 			if (amount==0) { return t; }
 			if (amount<0) { return t*(t*-amount+1+amount); }
 			return t*((2-t)*amount+(1-amount));
-<<<<<<< HEAD
 		};
 	};
-=======
-		}
-	}
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 	/**
 	 * Configurable exponential ease.
 	 * @method getPowIn
-<<<<<<< HEAD
 	 * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
 	 * @static
 	 * @return {Function}
-=======
-	 * @param pow The exponent to use (ex. 3 would return a cubic ease).
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.getPowIn = function(pow) {
 		return function(t) {
 			return Math.pow(t,pow);
-<<<<<<< HEAD
 		};
 	};
-=======
-		}
-	}
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 	/**
 	 * Configurable exponential ease.
 	 * @method getPowOut
-<<<<<<< HEAD
 	 * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
 	 * @static
 	 * @return {Function}
-=======
-	 * @param pow The exponent to use (ex. 3 would return a cubic ease).
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.getPowOut = function(pow) {
 		return function(t) {
 			return 1-Math.pow(1-t,pow);
-<<<<<<< HEAD
 		};
 	};
-=======
-		}
-	}
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 	/**
 	 * Configurable exponential ease.
 	 * @method getPowInOut
-<<<<<<< HEAD
 	 * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
 	 * @static
 	 * @return {Function}
-=======
-	 * @param pow The exponent to use (ex. 3 would return a cubic ease).
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.getPowInOut = function(pow) {
 		return function(t) {
 			if ((t*=2)<1) return 0.5*Math.pow(t,pow);
 			return 1-0.5*Math.abs(Math.pow(2-t,pow));
-<<<<<<< HEAD
 		};
 	};
 
@@ -3133,144 +2744,91 @@ this.createjs = this.createjs||{};
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-		}
-	}
-
-	/**
-	 * @method quadIn
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.quadIn = Ease.getPowIn(2);
 	/**
 	 * @method quadOut
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.quadOut = Ease.getPowOut(2);
 	/**
 	 * @method quadInOut
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.quadInOut = Ease.getPowInOut(2);
 
 	/**
 	 * @method cubicIn
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.cubicIn = Ease.getPowIn(3);
 	/**
 	 * @method cubicOut
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.cubicOut = Ease.getPowOut(3);
 	/**
 	 * @method cubicInOut
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.cubicInOut = Ease.getPowInOut(3);
 
 	/**
 	 * @method quartIn
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.quartIn = Ease.getPowIn(4);
 	/**
 	 * @method quartOut
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.quartOut = Ease.getPowOut(4);
 	/**
 	 * @method quartInOut
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.quartInOut = Ease.getPowInOut(4);
 
 	/**
 	 * @method quintIn
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.quintIn = Ease.getPowIn(5);
 	/**
 	 * @method quintOut
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.quintOut = Ease.getPowOut(5);
 	/**
 	 * @method quintInOut
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.quintInOut = Ease.getPowInOut(5);
 
 	/**
 	 * @method sineIn
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
@@ -3298,46 +2856,17 @@ this.createjs = this.createjs||{};
 	Ease.sineInOut = function(t) {
 		return -0.5*(Math.cos(Math.PI*t) - 1);
 	};
-=======
-	 * @static
-	 **/
-	Ease.sineIn = function(t) {
-		return 1-Math.cos(t*Math.PI/2);
-	}
-
-	/**
-	 * @method sineOut
-	 * @static
-	 **/
-	Ease.sineOut = function(t) {
-		return Math.sin(t*Math.PI/2);
-	}
-
-	/**
-	 * @method sineInOut
-	 * @static
-	 **/
-	Ease.sineInOut = function(t) {
-		return -0.5*(Math.cos(Math.PI*t) - 1)
-	}
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 	/**
 	 * Configurable "back in" ease.
 	 * @method getBackIn
-<<<<<<< HEAD
 	 * @param {Number} amount The strength of the ease.
 	 * @static
 	 * @return {Function}
-=======
-	 * @param amount The strength of the ease.
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.getBackIn = function(amount) {
 		return function(t) {
 			return t*t*((amount+1)*t-amount);
-<<<<<<< HEAD
 		};
 	};
 	/**
@@ -3345,32 +2874,19 @@ this.createjs = this.createjs||{};
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-		}
-	}
-	/**
-	 * @method backIn
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.backIn = Ease.getBackIn(1.7);
 
 	/**
 	 * Configurable "back out" ease.
 	 * @method getBackOut
-<<<<<<< HEAD
 	 * @param {Number} amount The strength of the ease.
 	 * @static
 	 * @return {Function}
-=======
-	 * @param amount The strength of the ease.
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.getBackOut = function(amount) {
 		return function(t) {
 			return (--t*t*((amount+1)*t + amount) + 1);
-<<<<<<< HEAD
 		};
 	};
 	/**
@@ -3378,34 +2894,21 @@ this.createjs = this.createjs||{};
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-		}
-	}
-	/**
-	 * @method backOut
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.backOut = Ease.getBackOut(1.7);
 
 	/**
 	 * Configurable "back in out" ease.
 	 * @method getBackInOut
-<<<<<<< HEAD
 	 * @param {Number} amount The strength of the ease.
 	 * @static
 	 * @return {Function}
-=======
-	 * @param amount The strength of the ease.
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.getBackInOut = function(amount) {
 		amount*=1.525;
 		return function(t) {
 			if ((t*=2)<1) return 0.5*(t*t*((amount+1)*t-amount));
 			return 0.5*((t-=2)*t*((amount+1)*t+amount)+2);
-<<<<<<< HEAD
 		};
 	};
 	/**
@@ -3413,19 +2916,11 @@ this.createjs = this.createjs||{};
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-		}
-	}
-	/**
-	 * @method backInOut
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.backInOut = Ease.getBackInOut(1.7);
 
 	/**
 	 * @method circIn
-<<<<<<< HEAD
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
@@ -3449,30 +2944,10 @@ this.createjs = this.createjs||{};
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	 * @static
-	 **/
-	Ease.circIn = function(t) {
-		return -(Math.sqrt(1-t*t)- 1);
-	}
-
-	/**
-	 * @method circOut
-	 * @static
-	 **/
-	Ease.circOut = function(t) {
-		return Math.sqrt(1-(--t)*t);
-	}
-
-	/**
-	 * @method circInOut
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.circInOut = function(t) {
 		if ((t*=2) < 1) return -0.5*(Math.sqrt(1-t*t)-1);
 		return 0.5*(Math.sqrt(1-(t-=2)*t)+1);
-<<<<<<< HEAD
 	};
 
 	/**
@@ -3490,21 +2965,6 @@ this.createjs = this.createjs||{};
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	}
-
-	/**
-	 * @method bounceIn
-	 * @static
-	 **/
-	Ease.bounceIn = function(t) {
-		return 1-Ease.bounceOut(1-t);
-	}
-
-	/**
-	 * @method bounceOut
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.bounceOut = function(t) {
 		if (t < 1/2.75) {
@@ -3516,7 +2976,6 @@ this.createjs = this.createjs||{};
 		} else {
 			return (7.5625*(t-=2.625/2.75)*t +0.984375);
 		}
-<<<<<<< HEAD
 	};
 
 	/**
@@ -3524,36 +2983,19 @@ this.createjs = this.createjs||{};
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-	}
-
-	/**
-	 * @method bounceInOut
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.bounceInOut = function(t) {
 		if (t<0.5) return Ease.bounceIn (t*2) * .5;
 		return Ease.bounceOut(t*2-1)*0.5+0.5;
-<<<<<<< HEAD
 	};
-=======
-	}
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 	/**
 	 * Configurable elastic ease.
 	 * @method getElasticIn
-<<<<<<< HEAD
 	 * @param {Number} amplitude
 	 * @param {Number} period
 	 * @static
 	 * @return {Function}
-=======
-	 * @param amplitude
-	 * @param period
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.getElasticIn = function(amplitude,period) {
 		var pi2 = Math.PI*2;
@@ -3561,7 +3003,6 @@ this.createjs = this.createjs||{};
 			if (t==0 || t==1) return t;
 			var s = period/pi2*Math.asin(1/amplitude);
 			return -(amplitude*Math.pow(2,10*(t-=1))*Math.sin((t-s)*pi2/period));
-<<<<<<< HEAD
 		};
 	};
 	/**
@@ -3569,29 +3010,16 @@ this.createjs = this.createjs||{};
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-		}
-	}
-	/**
-	 * @method elasticIn
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.elasticIn = Ease.getElasticIn(1,0.3);
 
 	/**
 	 * Configurable elastic ease.
 	 * @method getElasticOut
-<<<<<<< HEAD
 	 * @param {Number} amplitude
 	 * @param {Number} period
 	 * @static
 	 * @return {Function}
-=======
-	 * @param amplitude
-	 * @param period
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.getElasticOut = function(amplitude,period) {
 		var pi2 = Math.PI*2;
@@ -3599,7 +3027,6 @@ this.createjs = this.createjs||{};
 			if (t==0 || t==1) return t;
 			var s = period/pi2 * Math.asin(1/amplitude);
 			return (amplitude*Math.pow(2,-10*t)*Math.sin((t-s)*pi2/period )+1);
-<<<<<<< HEAD
 		};
 	};
 	/**
@@ -3607,29 +3034,16 @@ this.createjs = this.createjs||{};
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-		}
-	}
-	/**
-	 * @method elasticOut
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.elasticOut = Ease.getElasticOut(1,0.3);
 
 	/**
 	 * Configurable elastic ease.
 	 * @method getElasticInOut
-<<<<<<< HEAD
 	 * @param {Number} amplitude
 	 * @param {Number} period
 	 * @static
 	 * @return {Function}
-=======
-	 * @param amplitude
-	 * @param period
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.getElasticInOut = function(amplitude,period) {
 		var pi2 = Math.PI*2;
@@ -3637,7 +3051,6 @@ this.createjs = this.createjs||{};
 			var s = period/pi2 * Math.asin(1/amplitude);
 			if ((t*=2)<1) return -0.5*(amplitude*Math.pow(2,10*(t-=1))*Math.sin( (t-s)*pi2/period ));
 			return amplitude*Math.pow(2,-10*(t-=1))*Math.sin((t-s)*pi2/period)*0.5+1;
-<<<<<<< HEAD
 		};
 	};
 	/**
@@ -3645,13 +3058,6 @@ this.createjs = this.createjs||{};
 	 * @param {Number} t
 	 * @static
 	 * @return {Number}
-=======
-		}
-	}
-	/**
-	 * @method elasticInOut
-	 * @static
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 	 **/
 	Ease.elasticInOut = Ease.getElasticInOut(1,0.3*1.5);
 
@@ -3992,10 +3398,6 @@ this.createjs = this.createjs || {};
 	 * @type String
 	 * @static
 	 **/
-<<<<<<< HEAD
 	s.buildDate = /*=date*/"Wed, 27 May 2015 18:12:44 GMT"; // injected by build process
-=======
-	s.buildDate = /*=date*/"Thu, 11 Dec 2014 23:16:15 GMT"; // injected by build process
->>>>>>> 17e6bc7c6c078de0fe139768ff0d1f0f3fe404e6
 
 })();
