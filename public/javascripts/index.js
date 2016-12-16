@@ -14,11 +14,12 @@ var oldY;
 var degToRad = -Math.PI / 180;
 var score = 0;
 var nIntervId;
-var enemyInterval;
+//var enemyInterval;
 var special = false;
 var sonic = new createjs.Shape();
 var tempShield = false;
 var lives = 3;
+var timer;
 
 $(document).ready(function() {
   var context = $('canvas')[0].getContext('2d');
@@ -63,23 +64,25 @@ $(document).ready(function() {
     oldY = evt.stageY;
   })
   
-  //needs to be randomized
-  //enemyInterval = setInterval(addEnemy, 3000);
-  (function loop() {
-    var rand = 1000 * getRandomIntInclusive(0.1, 3);
-    setTimeout(function() {
-    //alert('A');
-    addEnemy();
-    loop();  
-    }, rand);
-  }());
-  //nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
+  //Spawns enemies on a random time interval between 1 - 3 seconds
+    //nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
 
   stage.on("stagemousedown", function() {
     if (!tempShield)
       shoot();
     })
+
+  randomEnemySpawn();
 });
+
+/**Spawns enemies on a random time interval between 1 - 3.5 seconds**/
+function randomEnemySpawn() {
+  var randomSpawnTime = 1000 * getRandomIntInclusive(1, 3.5);
+  timer = setTimeout(function() {
+    addEnemy();
+    randomEnemySpawn();
+  }, randomSpawnTime);
+}
 
 function tick(event) {
   /**Move projectiles**/
@@ -141,22 +144,26 @@ function destroyEnemy(enemy) {
 }
 
 function moveEnemies(element, index, array) {
-  //enemyContainer.children[index].x += (enemies[index].run * enemies[index].xDirection);
-  //enemyContainer.children[index].y += (enemies[index].rise * enemies[index].yDirection);
-
-  arcTan = Math.atan2(triangle.y - enemyContainer.children[index].y, triangle.x - enemyContainer.children[index].x);
+  if (enemies[index].homing) {
+    arcTan = Math.atan2(triangle.y - enemyContainer.children[index].y,
+      triangle.x - enemyContainer.children[index].x);
   
-  enemyContainer.children[index].x += (Math.cos(arcTan) * enemies[index].run);
-  enemyContainer.children[index].y += (Math.sin(arcTan) * enemies[index].rise)
-
+    enemyContainer.children[index].x += (Math.cos(arcTan) * enemies[index].run);
+    enemyContainer.children[index].y += (Math.sin(arcTan) * enemies[index].rise)
+  }
+  else {
+    enemyContainer.children[index].x += (enemies[index].run * enemies[index].xDirection);
+    enemyContainer.children[index].y += (enemies[index].rise * enemies[index].yDirection);
+  }
 }
 
-function createEnemy(enemy) {
+function createEnemy(enemy, homing) {
   this.shape = enemy;
   this.yDirection = 1;
   this.xDirection = 1;
   this.rise = Math.floor(Math.random() * 11);
   this.run = Math.floor(Math.random() * 11);
+  this.homing = homing;
 }
 
 function addEnemy() {
@@ -165,8 +172,11 @@ function addEnemy() {
   enemy.x = getRandomIntInclusive(26,474);
   enemy.y = getRandomIntInclusive(26,474);
   enemy.alpha = 0;
-
-  enemies.push(new createEnemy(enemy));
+  
+  if (score % 500 == 0 && score != 0)
+    enemies.push(new createEnemy(enemy, true));
+  else
+    enemies.push(new createEnemy(enemy, false));
 
   enemyContainer.addChild(enemies[enemies.length - 1].shape);
   createjs.Tween.get(enemies[enemies.length - 1].shape)
@@ -203,8 +213,6 @@ function moveProjectiles(element, index, array) {
 
 /**Ship collision detection**/
 function shipCollision(enemy) {
-  //var xTriDistance = triangle.x - enemy.x;
-  //var yTriDistance = triangle.y - enemy.y;
   var distanceTwo = pythagorus(distanceCalc(triangle.x, enemy.x),
     distanceCalc(triangle.y, enemy.y));
 
@@ -219,8 +227,6 @@ function shipCollision(enemy) {
 }
 
 function bulletCollision(enemy, bullet) {
-  //var xDistance = ;
-  //var yDistance = bulletContainer.children[y].y - enemyContainer.children[x].y;
   var distanceOne = pythagorus(distanceCalc(bullet.x, enemy.x),
     distanceCalc(bullet.y, enemy.y));
 
@@ -234,7 +240,7 @@ function bulletCollision(enemy, bullet) {
 }
 
 function gameover() {
-  clearInterval(enemyInterval);
+  clearTimeout(timer);
   clearInterval(nIntervId);
   tempShield = true;
 
@@ -400,36 +406,24 @@ function incrementScore() {
   scoreDisplay.text = score;
 }
 
-function cleanContainers(bulletIndex, enemyIndex) {
-  if (bulletIndex === null) {
-    console.log(enemyContainer.removeChildAt(enemyIndex));
-  }
-  else {
-    console.log(enemyContainer.removeChildAt(enemyIndex));
-    console.log(bulletContainer.removeChildAt(bulletIndex));
-  }
-  /**fixes the change in movement when the bullet collides**/
-  enemies.splice(enemyIndex, 1);
-}
-
 function cleanContainer(container, shape) {
   container.removeChild(shape);
 }
 
 $(document).keydown(function(event) {
-  if (event.which == 37) {
-    triangle.rotation--;
+  if (event.which == 65) {
+    triangle.rotation -= 7;
   }
-  else if (event.which == 39) {
-    triangle.rotation++;
+  else if (event.which == 68) {
+    triangle.rotation += 7;
   }
   /**else if (event.which == 32) {
     superSonic();
   }**/
   else if (event.which == 32) {
     //initialize();
-    enemyInterval = setInterval(addEnemy, 3000);
-    nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
+    randomEnemySpawn();
+    //nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
     tempShield = false;
     lives = 3;
     score = 0;
