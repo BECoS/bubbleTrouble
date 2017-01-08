@@ -5,7 +5,7 @@ var bulletContainer = new createjs.Container();
 var enemyContainer = new createjs.Container();
 var particleContainer = new createjs.Container();
 var specialContainer = new createjs.Container();
-var scoreDisplay = new createjs.Text('Lives: 3  Score: 0', '20px Arial');
+var score_life_text = new createjs.Text('Lives: 3  Score: 0', '20px Arial');
 var enemies = [];
 var spheres = [];
 var particles = [];
@@ -33,8 +33,8 @@ $(document).ready(function() {
   createjs.Ticker.on('tick', tick);
   createjs.Ticker.addEventListener('tick', stage);
 
-  scoreDisplay.x = context.canvas.width - ((1/2)*context.canvas.width);
-  scoreDisplay.baseLine = 'alphabetic';
+  score_life_text.x = context.canvas.width - ((1/2)*context.canvas.width);
+  score_life_text.baseLine = 'alphabetic';
  
   triangle = new createjs.Shape();
   triangle.graphics.beginFill('DeepSkyBlue');
@@ -52,7 +52,7 @@ $(document).ready(function() {
   stage.addChild(specialContainer);
   stage.addChild(enemyContainer);
   stage.addChild(particleContainer);
-  stage.addChild(scoreDisplay);
+  stage.addChild(score_life_text);
   
   stage.on("stagemousemove", function(evt) {
     if (oldX) {
@@ -224,7 +224,7 @@ function shipCollision(enemy) {
     else
       resetShip();
 
-    scoreDisplay.text = "lives: " + lives + "  Score: " + score;
+    score_life_text.text = "lives: " + lives + "  Score: " + score;
   }
 }
 
@@ -405,7 +405,7 @@ function distanceCalc(a, b) {
 
 function incrementScore() {
   score += 100;
-  scoreDisplay.text = "lives: " + lives + "  Score: " + score;
+  score_life_text.text = "lives: " + lives + "  Score: " + score;
 }
 
 function cleanContainer(container, shape) {
@@ -429,6 +429,6 @@ $(document).keydown(function(event) {
     tempShield = false;
     lives = 3;
     score = 0;
-    scoreDisplay.text = "lives: " + lives + "  Score: " + score;
+    score_life_text.text = "lives: " + lives + "  Score: " + score;
   }
 });
