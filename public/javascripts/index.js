@@ -5,7 +5,7 @@ var bulletContainer = new createjs.Container();
 var enemyContainer = new createjs.Container();
 var particleContainer = new createjs.Container();
 var specialContainer = new createjs.Container();
-var scoreDisplay = new createjs.Text('0', '20px Arial');
+var scoreDisplay = new createjs.Text('Lives: 3  Score: 0', '20px Arial');
 var enemies = [];
 var spheres = [];
 var particles = [];
@@ -33,7 +33,7 @@ $(document).ready(function() {
   createjs.Ticker.on('tick', tick);
   createjs.Ticker.addEventListener('tick', stage);
 
-  scoreDisplay.x = context.canvas.width - ((1/4)*context.canvas.width);
+  scoreDisplay.x = context.canvas.width - ((1/2)*context.canvas.width);
   scoreDisplay.baseLine = 'alphabetic';
  
   triangle = new createjs.Shape();
@@ -223,6 +223,8 @@ function shipCollision(enemy) {
       gameover();
     else
       resetShip();
+
+    scoreDisplay.text = "lives: " + lives + "  Score: " + score;
   }
 }
 
@@ -403,7 +405,7 @@ function distanceCalc(a, b) {
 
 function incrementScore() {
   score += 100;
-  scoreDisplay.text = score;
+  scoreDisplay.text = "lives: " + lives + "  Score: " + score;
 }
 
 function cleanContainer(container, shape) {
@@ -420,13 +422,13 @@ $(document).keydown(function(event) {
   /**else if (event.which == 32) {
     superSonic();
   }**/
-  else if (event.which == 32) {
+  else if (event.which == 32 && lives == 0) {
     //initialize();
     randomEnemySpawn();
     //nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
     tempShield = false;
     lives = 3;
     score = 0;
-    scoreDisplay.text = score;
+    scoreDisplay.text = "lives: " + lives + "  Score: " + score;
   }
 });
