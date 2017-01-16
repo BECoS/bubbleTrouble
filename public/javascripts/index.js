@@ -20,6 +20,7 @@ var sonic = new createjs.Shape();
 var tempShield = false;
 var lives = 3;
 var timer;
+var enemy_homing_on = false;
 
 $(document).ready(function() {
   var context = $('canvas')[0].getContext('2d');
@@ -138,6 +139,9 @@ function destroyBullet(bullet) {
 function destroyEnemy(enemy) {
   createjs.Tween.get(enemy)
     .to({alpha:0, visible:false}, 100);
+
+  if (enemies[enemyContainer.getChildIndex(enemy)].homing);
+    enemy_homing_on = false;
   
   addParticles(enemy.x, enemy.y, getRandomIntInclusive(7, 17));
   enemies.splice(enemyContainer.getChildIndex(enemy), 1);
@@ -157,13 +161,13 @@ function moveEnemies(element, index, array) {
   }
 }
 
-function createEnemy(enemy, homing) {
+function createEnemy(enemy, follow) {
   this.shape = enemy;
   this.yDirection = 1;
   this.xDirection = 1;
   this.rise = Math.floor(Math.random() * 11);
   this.run = Math.floor(Math.random() * 11);
-  this.homing = homing;
+  this.homing = follow;
 }
 
 function addEnemy() {
@@ -173,7 +177,7 @@ function addEnemy() {
   enemy.y = getRandomIntInclusive(26,474);
   enemy.alpha = 0;
   
-  if (score % 500 == 0 && score != 0)
+  if (enemy_homing_on) 
     enemies.push(new createEnemy(enemy, true));
   else
     enemies.push(new createEnemy(enemy, false));
@@ -405,6 +409,9 @@ function distanceCalc(a, b) {
 
 function incrementScore() {
   score += 100;
+  if (score % 500 == 0)
+    enemy_homing_on = true;
+
   score_life_text.text = "lives: " + lives + "  Score: " + score;
 }
 
