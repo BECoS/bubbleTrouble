@@ -9,6 +9,7 @@ var score_life_text = new createjs.Text('Lives: 3  Score: 0', '20px Arial');
 var enemies = [];
 var spheres = [];
 var particles = [];
+var projectiles = [];
 var oldX;
 var oldY;
 var degToRad = -Math.PI / 180;
@@ -20,9 +21,9 @@ var sonic = new createjs.Shape();
 var tempShield = false;
 var lives = 3;
 var timer;
-var enemy_homing_on = false;
+var SEEKER = false;
 
-$(document).ready(function() {
+$(document).ready(function () {
   var context = $('canvas')[0].getContext('2d');
   context.canvas.width = 500;
   context.canvas.height = 500;
@@ -34,9 +35,9 @@ $(document).ready(function() {
   createjs.Ticker.on('tick', tick);
   createjs.Ticker.addEventListener('tick', stage);
 
-  score_life_text.x = context.canvas.width - ((1/2)*context.canvas.width);
+  score_life_text.x = context.canvas.width - ((1 / 2) * context.canvas.width);
   score_life_text.baseLine = 'alphabetic';
- 
+
   triangle = new createjs.Shape();
   triangle.graphics.beginFill('DeepSkyBlue');
   triangle.graphics.moveTo(0, 0).lineTo(10, 15).lineTo(0, 30).lineTo(30, 15).lineTo(0, 0);
@@ -54,8 +55,8 @@ $(document).ready(function() {
   stage.addChild(enemyContainer);
   stage.addChild(particleContainer);
   stage.addChild(score_life_text);
-  
-  stage.on("stagemousemove", function(evt) {
+
+  stage.on("stagemousemove", function (evt) {
     if (oldX) {
       triangle.x = evt.stageX;
       triangle.y = evt.stageY;
@@ -64,22 +65,133 @@ $(document).ready(function() {
     oldX = evt.stageX;
     oldY = evt.stageY;
   })
-  
-  //Spawns enemies on a random time interval between 1 - 3 seconds
-    //nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
 
-  stage.on("stagemousedown", function() {
+  //Spawns enemies on a random time interval between 1 - 3 seconds
+  //nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
+
+  stage.on("stagemousedown", function () {
     if (!tempShield)
       shoot();
-    })
+  })
 
   randomEnemySpawn();
 });
 
+class Enemy {
+  constructor() {
+    this.enemyShape = new createjs.Shape();
+    this.enemyShape.graphics.beginFill('black').drawCircle(0, 0, 25);
+    this.enemyShape.x = getRandomIntInclusive(26, 474);
+    this.enemyShape.y = getRandomIntInclusive(26, 474);
+    this.enemyShape.alpha = 0;
+    //this.shape = enemy;
+    this.yDirection = 1;
+    this.xDirection = 1;
+    this.xMovement = getRandomIntInclusive(1, 10);
+    this.yMovement = getRandomIntInclusive(1, 10);
+  }
+
+  getEnemyShape() {
+    return this.enemyShape;
+  }
+
+  getXOffset() {
+    return this.enemyShape.x;
+  }
+
+  getYOffset() {
+    return this.enemyShape.y;
+  }
+
+  getXDirection() {
+    return this.xDirection;
+  }
+
+  getYDirection() {
+    return this.yDirection;
+  }
+
+  setXDirection(value) {
+    this.xDirection = value;
+  }
+
+  setYDirection(value) {
+    this.yDirection = value;
+  }
+
+  move() {
+    this.enemyShape.x += (this.xMovement * this.xDirection);
+    this.enemyShape.y += (this.yMovement * this.yDirection);
+  }
+
+  destroy() {
+    createjs.Tween.get(this.enemyShape)
+      .to({ alpha: 0, visible: false }, 100);
+
+    addParticles(this.enemyShape.x, this.enemyShape.y, getRandomIntInclusive(7, 17));
+    enemies.splice(enemyContainer.getChildIndex(this.enemyShape), 1);
+  }
+}
+
+class SeekerEnemy extends Enemy {
+  constructor() {
+    super();
+  }
+
+  move() {
+    var arcTan = Math.atan2(triangle.y - this.enemyShape.y,
+      triangle.x - this.enemyShape.x);
+
+    this.enemyShape.x += (Math.cos(arcTan) * this.run);
+    this.enemyShape.y += (Math.sin(arcTan) * this.rise);
+  }
+}
+
+class Projectile {
+  constructor() {
+    this.projectileShape = new createjs.Shape();
+    this.projectileShape.graphics.beginFill('black').drawCircle(0, 0, 5);
+    this.projectileShape.regX = 0;
+    this.projectileShape.regY = 0;
+    this.projectileShape.x = triangle.x;
+    this.projectileShape.y = triangle.y;
+    this.projectileShape.rotation = triangle.rotation;
+  }
+
+  getProjectileShape() {
+    return this.projectileShape;
+  }
+
+  getXOffset() {
+    return this.projectileShape.x;
+  }
+
+    getYOffset() {
+    return this.projectileShape.y;
+  }
+
+  getRotation() {
+    return this.projectileShape.rotation;
+  }
+
+  destroy() {
+    createjs.Tween.get(this.projectileShape)
+      .to({ alpha: 0, visible: false }, 100);
+  }
+
+  move() {
+    var verticalMovement = Math.sin(this.projectileShape.rotation * degToRad) * 30;
+    var horizontalMovement = Math.cos(this.projectileShape.rotation * degToRad) * 30;
+
+    this.projectileShape.x += horizontalMovement;
+    this.projectileShape.y -= verticalMovement;
+  }
+}
+
 /**Spawns enemies on a random time interval between 1 - 3.5 seconds**/
 function randomEnemySpawn() {
   var randomSpawnTime = 1000 * getRandomIntInclusive(1, 3.5);
-  timer = setTimeout(function() {
+  timer = setTimeout(function () {
     addEnemy();
     randomEnemySpawn();
   }, randomSpawnTime);
@@ -87,19 +199,19 @@ function randomEnemySpawn() {
 
 function tick(event) {
   /**Move projectiles**/
-  bulletContainer.children.forEach(moveProjectiles);
+  projectiles.forEach(moveProjectiles);
 
-  for (var x = 0; x < enemyContainer.children.length; x++) {
-    
+  for (var x = 0; x < enemies.length; x++) {
+
     /**Check for ship collisions**/
-    shipCollision(enemyContainer.children[x]);
+    shipCollision(enemies[x]);
 
     /**Check for bullet collisions**/
-    for (var y = 0; y < bulletContainer.children.length; y++) {
-      bulletCollision(enemyContainer.children[x], bulletContainer.children[y]);
+    for (var y = 0; y < projectiles.length; y++) {
+      bulletCollision(enemies[x], projectiles[y]);
     }
   }
-  
+
   if (special) {
     for (var x = 0; x < enemyContainer.children.length; x++) {
       var xDistance = sonic.x - enemyContainer.children[x].x;
@@ -115,13 +227,13 @@ function tick(event) {
     specialContainer.children[0].graphics.clear();
     specialContainer.children[0].radius += 5;
     increaseSuperSonic(specialContainer.children[0], specialContainer.children[0].radius);
- 
+
     if (sonic.radius >= stage.canvas.width) {
       createjs.Tween.get(specialContainer.children[0])
-        .to({alpha:0, visible:false}, 100);
+        .to({ alpha: 0, visible: false }, 100);
       specialContainer.removeChildAt(0);
       special = false;
-    }    
+    }
   }
 
   handleComplete();
@@ -132,97 +244,59 @@ function tick(event) {
 
 /*** Enemy Functions ***/
 function destroyBullet(bullet) {
-  createjs.Tween.get(bullet)
-    .to({alpha:0, visible:false}, 100);  
+  bullet.destroy();
 }
 
 function destroyEnemy(enemy) {
-  createjs.Tween.get(enemy)
-    .to({alpha:0, visible:false}, 100);
-
-  if (enemies[enemyContainer.getChildIndex(enemy)].homing);
-    enemy_homing_on = false;
-  
-  addParticles(enemy.x, enemy.y, getRandomIntInclusive(7, 17));
-  enemies.splice(enemyContainer.getChildIndex(enemy), 1);
+  enemy.destroy();
 }
 
 function moveEnemies(element, index, array) {
-  if (enemies[index].homing) {
-    arcTan = Math.atan2(triangle.y - enemyContainer.children[index].y,
-      triangle.x - enemyContainer.children[index].x);
-  
-    enemyContainer.children[index].x += (Math.cos(arcTan) * enemies[index].run);
-    enemyContainer.children[index].y += (Math.sin(arcTan) * enemies[index].rise)
-  }
-  else {
-    enemyContainer.children[index].x += (enemies[index].run * enemies[index].xDirection);
-    enemyContainer.children[index].y += (enemies[index].rise * enemies[index].yDirection);
-  }
-}
-
-function createEnemy(enemy, follow) {
-  this.shape = enemy;
-  this.yDirection = 1;
-  this.xDirection = 1;
-  this.rise = Math.floor(Math.random() * 11);
-  this.run = Math.floor(Math.random() * 11);
-  this.homing = follow;
+  enemies[index].move();
 }
 
 function addEnemy() {
-  var enemy = new createjs.Shape();
-  enemy.graphics.beginFill('black').drawCircle(0, 0, 25);
-  enemy.x = getRandomIntInclusive(26,474);
-  enemy.y = getRandomIntInclusive(26,474);
-  enemy.alpha = 0;
-  
-  if (enemy_homing_on) 
-    enemies.push(new createEnemy(enemy, true));
-  else
-    enemies.push(new createEnemy(enemy, false));
+  if (!SEEKER) {
+    enemies.push(new Enemy());
+  }
+  else {
+    enemies.push(new SeekerEnemy());
+    SEEKER = false;
+  }
 
-  enemyContainer.addChild(enemies[enemies.length - 1].shape);
-  createjs.Tween.get(enemies[enemies.length - 1].shape)
-    .to({alpha:1, visible:true}, 500);
+  enemyContainer.addChild(enemies[enemies.length - 1].enemyShape);
+  createjs.Tween.get(enemies[enemies.length - 1].enemyShape)
+    .to({ alpha: 1, visible: true }, 500);
 }
 
 /*** Projectile Functions ***/
 function shoot() {
-  var shot = new createjs.Shape();
-  shot.graphics.beginFill('black').drawCircle(0, 0, 5);
-  shot.regX = 0;
-  shot.regY = 0;
-  shot.x = triangle.x;
-  shot.y = triangle.y;
-  shot.rotation = triangle.rotation;
-
-  bulletContainer.addChild(shot);
+  projectiles.push(new Projectile())
+  bulletContainer.addChild(projectiles[projectiles.length - 1].getProjectileShape());
 }
 
 function moveProjectiles(element, index, array) {
-  var rise = Math.sin(array[index].rotation * degToRad) * 30;
-  var run = Math.cos(array[index].rotation * degToRad) * 30;
+  array[index].move();
 
-  array[index].x += run;
-  array[index].y -= rise;
-
-  //clean this up
   /**Remove offstage bulletContainer**/
-  if (array[index].x < 0 || array[index].x > stage.canvas.width)
+  if (array[index].getXOffset() < 0 || array[index].getXOffset() > stage.canvas.width) {
     bulletContainer.removeChildAt(index);
-  else if (array[index].y < 0 || array[index].y > stage.canvas.height)
+    projectiles.splice(projectiles.indexOf(array[index]), 1);
+  }
+  else if (array[index].getYOffset() < 0 || array[index].getYOffset() > stage.canvas.height) {
     bulletContainer.removeChildAt(index);
+    projectiles.splice(projectiles.indexOf(array[index]), 1);
+  }
 }
 
 /**Ship collision detection**/
 function shipCollision(enemy) {
-  var distanceTwo = pythagorus(distanceCalc(triangle.x, enemy.x),
-    distanceCalc(triangle.y, enemy.y));
+  var distanceTwo = pythagorus(distanceCalc(triangle.x, enemy.getXOffset()),
+    distanceCalc(triangle.y, enemy.getYOffset()));
 
   if (distanceTwo < 15 + 25 && !tempShield) {
     destroyEnemy(enemy);
-    cleanContainer(enemyContainer, enemy);
+    cleanContainer(enemyContainer, enemy.getEnemyShape());
     if (--lives <= 0)
       gameover();
     else
@@ -232,15 +306,15 @@ function shipCollision(enemy) {
   }
 }
 
-function bulletCollision(enemy, bullet) {
-  var distanceOne = pythagorus(distanceCalc(bullet.x, enemy.x),
-    distanceCalc(bullet.y, enemy.y));
+function bulletCollision(enemy, projectile) {
+  var distanceOne = pythagorus(distanceCalc(projectile.getXOffset(), enemy.getXOffset()),
+    distanceCalc(projectile.getYOffset(), enemy.getYOffset()));
 
   if (distanceOne < 5 + 25) {
     destroyEnemy(enemy);
-    destroyBullet(bullet);
-    cleanContainer(enemyContainer, enemy);
-    cleanContainer(bulletContainer, bullet);
+    destroyBullet(projectile);
+    cleanContainer(enemyContainer, enemy.getEnemyShape());
+    cleanContainer(bulletContainer, projectile.getProjectileShape());
     incrementScore();
   }
 }
@@ -252,7 +326,7 @@ function gameover() {
 
   for (x = 0; x < enemies.length; x++) {
     createjs.Tween.get(enemyContainer.children[x])
-    .to({alpha:0, visible:false}, 100);
+      .to({ alpha: 0, visible: false }, 100);
     addParticles(enemyContainer.children[x].x, enemyContainer.children[x].y, getRandomIntInclusive(7, 17));
   }
 
@@ -265,9 +339,9 @@ function gameover() {
 /**Gives the ship a two second window after being hit**/
 function resetShip() {
   createjs.Tween.get(triangle)
-    .to({alpha:0}, 500).to({alpha:1}, 500).to({alpha:0}, 500).to({alpha:1}, 500);
+    .to({ alpha: 0 }, 500).to({ alpha: 1 }, 500).to({ alpha: 0 }, 500).to({ alpha: 1 }, 500);
   tempShield = true;
-  setTimeout(function() {
+  setTimeout(function () {
     tempShield = false;
   }, 2000);
 }
@@ -275,31 +349,31 @@ function resetShip() {
 /** Background Functions **/
 function moveBackground(element, index, array) {
   sphereContainer.children[index].y -= spheres[index].rise;
-  
+
   createjs.Tween.get(spheres[index].shape)
-    .to({alpha:1, visible:true}, 500);  
-  
+    .to({ alpha: 1, visible: true }, 500);
+
   if (array[index].y < -15)
     sphereContainer.removeChildAt(index);
 }
 
 function addSphere() {
   var sphere = new createjs.Shape();
-  sphere.graphics.beginFill(createjs.Graphics.getHSL(Math.random()*360,100,50)).drawCircle(0,0,30);
+  sphere.graphics.beginFill(createjs.Graphics.getHSL(Math.random() * 360, 100, 50)).drawCircle(0, 0, 30);
   sphere.x = Math.random() * stage.canvas.width;
   sphere.y = getRandomIntInclusive(stage.canvas.height, stage.canvas.height + 15);
-  sphere.alpha = 0;  
-  
+  sphere.alpha = 0;
+
   spheres.push(new createSphere(sphere));
 
   sphereContainer.addChild(spheres[spheres.length - 1].shape);
   createjs.Tween.get(spheres[spheres.length - 1].shape)
-    .to({alpha:0.1, visible:true}, 500);  
+    .to({ alpha: 0.1, visible: true }, 500);
 }
 
 function createSphere(sphere) {
   this.shape = sphere;
-  this.rise = getRandomIntInclusive(1, 5); 
+  this.rise = getRandomIntInclusive(1, 5);
 }
 
 /** Particle Functions **/
@@ -311,55 +385,55 @@ function moveParticles(element, index, array) {
 
 function addParticles(x, y, amount) {
   while (amount > 0) {
-  var particle = new createjs.Shape();
-  var randInt = getRandomIntInclusive(0, 2);
+    var particle = new createjs.Shape();
+    var randInt = getRandomIntInclusive(0, 2);
 
-  if (randInt === 0) {
-    particle.graphics.setStrokeStyle(1).beginStroke(createjs.Graphics.getHSL(Math.random()*360,100,50)).drawCircle(0, 0, getRandomIntInclusive(5, 25));
-  }
-  else if (randInt === 1) {
-    particle.graphics.beginFill(createjs.Graphics.getHSL(Math.random()*360,100,50)).drawCircle(0, 0, getRandomIntInclusive(5, 25));
-    var blurFilter = new createjs.BlurFilter(5, 5, 1);
-    particle.filters = [blurFilter];
-    var bounds = blurFilter.getBounds();
-      
-    particle.cache(-50+bounds.x, -50+bounds.y, 100+bounds.width, 100+bounds.height);
-  }
-  else {
-    particle.graphics.beginFill("#FF0").drawPolyStar(0, 0,  getRandomIntInclusive(5, 15), 5, 0.5, -90);
-  }
-  
-  particle.x = x;
-  particle.y = y;
-  particle.alpha = 1;
+    if (randInt === 0) {
+      particle.graphics.setStrokeStyle(1).beginStroke(createjs.Graphics.getHSL(Math.random() * 360, 100, 50)).drawCircle(0, 0, getRandomIntInclusive(5, 25));
+    }
+    else if (randInt === 1) {
+      particle.graphics.beginFill(createjs.Graphics.getHSL(Math.random() * 360, 100, 50)).drawCircle(0, 0, getRandomIntInclusive(5, 25));
+      var blurFilter = new createjs.BlurFilter(5, 5, 1);
+      particle.filters = [blurFilter];
+      var bounds = blurFilter.getBounds();
 
-  particles.push(new createParticle(particle));
+      particle.cache(-50 + bounds.x, -50 + bounds.y, 100 + bounds.width, 100 + bounds.height);
+    }
+    else {
+      particle.graphics.beginFill("#FF0").drawPolyStar(0, 0, getRandomIntInclusive(5, 15), 5, 0.5, -90);
+    }
 
-  particleContainer.addChild(particles[particles.length - 1].shape);
-  amount--;
+    particle.x = x;
+    particle.y = y;
+    particle.alpha = 1;
+
+    particles.push(new createParticle(particle));
+
+    particleContainer.addChild(particles[particles.length - 1].shape);
+    amount--;
   }
-  
+
   for (x = 0; x < particles.length; x++) {
     createjs.Tween.get(particles[x].shape)
-      .to({alpha:0, visible:false}, 400);
+      .to({ alpha: 0, visible: false }, 400);
   }
 }
 
 function createParticle(particle) {
   this.shape = particle;
-  
+
   if (getRandomIntInclusive(0, 1) > 0) {
     this.yDirection = 1;
   }
   else
     this.yDirection = -1;
-  
+
   if (getRandomIntInclusive(0, 1) > 0) {
     this.xDirection = 1;
   }
   else
     this.xDirection = -1;
-  
+
   this.rise = Math.floor(Math.random() * 11);
   this.run = Math.floor(Math.random() * 11);
 }
@@ -369,48 +443,44 @@ function superSonic() {
   sonic.radius = 30;
   sonic.alpha = 1;
   sonic.visible = true;
-  sonic.graphics.setStrokeStyle(10).beginStroke(createjs.Graphics.getHSL(Math.random()*360,100,50)).drawCircle(0, 0, sonic.radius);
-  
+  sonic.graphics.setStrokeStyle(10).beginStroke(createjs.Graphics.getHSL(Math.random() * 360, 100, 50)).drawCircle(0, 0, sonic.radius);
+
   sonic.x = triangle.x;
   sonic.y = triangle.y;
-  
+
   specialContainer.addChild(sonic);
 }
 
 function increaseSuperSonic(aShape, radius) {
-  aShape.graphics.setStrokeStyle(10).beginStroke(createjs.Graphics.getHSL(Math.random()*360,100,50)).drawCircle(0, 0, radius);
+  aShape.graphics.setStrokeStyle(10).beginStroke(createjs.Graphics.getHSL(Math.random() * 360, 100, 50)).drawCircle(0, 0, radius);
 }
 
 function handleComplete() {
-  for (var x = 0; x < enemyContainer.children.length; x++) {
+  for (var x = 0; x < enemies.length; x++) {
     //**Check width boundaries**//
-    if (enemyContainer.children[x].y < 25 || enemyContainer.children[x].y + 25 > stage.canvas.height) {
-      enemies[x].yDirection = -(enemies[x].yDirection);
+    if (enemies[x].getYOffset() < 25 || enemies[x].getYOffset() + 25 > stage.canvas.height) {
+      enemies[x].setYDirection(-enemies[x].getYDirection());
     }
-    
+
     //**Check height boundaries**//
-    if (enemyContainer.children[x].x < 25 || enemyContainer.children[x].x + 25 > stage.canvas.width) {
-      enemies[x].xDirection = -(enemies[x].xDirection);
+    if (enemies[x].getXOffset() < 25 || enemies[x].getXOffset() + 25 > stage.canvas.width) {
+      enemies[x].setXDirection(-enemies[x].getXDirection());
     }
   }
 }
 
-function getRandomIntInclusive(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 function pythagorus(a, b) {
-  return Math.sqrt(Math.pow(a, 2) +  Math.pow(b, 2));
+  return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 }
 
 function distanceCalc(a, b) {
-  return a - b; 
-} 
+  return a - b;
+}
 
 function incrementScore() {
   score += 100;
   if (score % 500 == 0)
-    enemy_homing_on = true;
+    SEEKER = true;
 
   score_life_text.text = "lives: " + lives + "  Score: " + score;
 }
@@ -419,7 +489,13 @@ function cleanContainer(container, shape) {
   container.removeChild(shape);
 }
 
-$(document).keydown(function(event) {
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+$(document).keydown(function (event) {
   if (event.which == 65) {
     triangle.rotation -= 7;
   }
