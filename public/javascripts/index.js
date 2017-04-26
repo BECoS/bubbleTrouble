@@ -12,13 +12,12 @@ var particles = [];
 var projectiles = [];
 var oldX;
 var oldY;
-var degToRad = -Math.PI / 180;
+var DEGREE_TO_RADIAN = -Math.PI / 180;
 var score = 0;
 var nIntervId;
-//var enemyInterval;
 var special = false;
 var sonic = new createjs.Shape();
-var tempShield = false;
+var RESPAWN = false;
 var lives = 3;
 var timer;
 var SEEKER = false;
@@ -70,7 +69,7 @@ $(document).ready(function () {
   //nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
 
   stage.on("stagemousedown", function () {
-    if (!tempShield)
+    if (!RESPAWN)
       shoot();
   })
 
@@ -84,7 +83,6 @@ class Enemy {
     this.enemyShape.x = getRandomIntInclusive(26, 474);
     this.enemyShape.y = getRandomIntInclusive(26, 474);
     this.enemyShape.alpha = 0;
-    //this.shape = enemy;
     this.yDirection = 1;
     this.xDirection = 1;
     this.xMovement = getRandomIntInclusive(1, 10);
@@ -166,7 +164,7 @@ class Projectile {
     return this.projectileShape.x;
   }
 
-    getYOffset() {
+  getYOffset() {
     return this.projectileShape.y;
   }
 
@@ -180,11 +178,57 @@ class Projectile {
   }
 
   move() {
-    var verticalMovement = Math.sin(this.projectileShape.rotation * degToRad) * 30;
-    var horizontalMovement = Math.cos(this.projectileShape.rotation * degToRad) * 30;
+    var verticalMovement = Math.sin(this.projectileShape.rotation * DEGREE_TO_RADIAN) * 30;
+    var horizontalMovement = Math.cos(this.projectileShape.rotation * DEGREE_TO_RADIAN) * 30;
 
     this.projectileShape.x += horizontalMovement;
     this.projectileShape.y -= verticalMovement;
+  }
+}
+
+class RainbowDust {
+  constructor(x, y, pattern, xDirection, yDirection) {
+    this.rainbowDustShape = new createjs.Shape();
+    this.rainbowDustShape.x = x;
+    this.rainbowDustShape.y = y;
+    this.rainbowDustShape.alpha = 1;
+    this.xMovement = getRandomIntInclusive(1, 10);
+    this.yMovement = getRandomIntInclusive(1, 10);
+    this.yDirection = yDirection;
+    this.xDirection = xDirection;
+
+    //createRainbowDust(pattern);
+  }
+
+  createRainbowDust(pattern) {
+    if (pattern === 0) {
+      this.rainbowDustShape.graphics.setStrokeStyle(1).beginStroke(createjs.Graphics.
+        getHSL(Math.random() * 360, 100, 50)).drawCircle(0, 0, getRandomIntInclusive(5, 25));
+    }
+    else if (pattern === 1) {
+      this.rainbowDustShape.graphics.beginFill(createjs.Graphics.getHSL(Math.random() * 360, 100, 50)).
+        drawCircle(0, 0, getRandomIntInclusive(5, 25));
+      var blurFilter = new createjs.BlurFilter(5, 5, 1);
+      this.rainbowDustShape.filters = [blurFilter];
+      var bounds = blurFilter.getBounds();
+
+      this.rainbowDustShape.cache(-50 + bounds.x, -50 + bounds.y,
+        100 + bounds.width, 100 + bounds.height);
+    }
+    else {
+      this.rainbowDustShape.graphics.beginFill("#FF0").
+        drawPolyStar(0, 0, getRandomIntInclusive(5, 15), 5, 0.5, -90);
+    }
+  }
+
+  move() {
+    this.rainbowDustShape.x += (this.xMovement * this.xDirection);
+    this.rainbowDustShape.y += (this.yMovement * this.yDirection);
+    this.rainbowDustShape.rotation++;
+  }
+
+  getRainbowDustShape() {
+    return this.rainbowDustShape;
   }
 }
 
@@ -237,18 +281,9 @@ function tick(event) {
   }
 
   handleComplete();
-  particleContainer.children.forEach(moveParticles);
+  particles.forEach(moveParticles);
   enemyContainer.children.forEach(moveEnemies);
   sphereContainer.children.forEach(moveBackground);
-}
-
-/*** Enemy Functions ***/
-function destroyBullet(bullet) {
-  bullet.destroy();
-}
-
-function destroyEnemy(enemy) {
-  enemy.destroy();
 }
 
 function moveEnemies(element, index, array) {
@@ -294,8 +329,8 @@ function shipCollision(enemy) {
   var distanceTwo = pythagorus(distanceCalc(triangle.x, enemy.getXOffset()),
     distanceCalc(triangle.y, enemy.getYOffset()));
 
-  if (distanceTwo < 15 + 25 && !tempShield) {
-    destroyEnemy(enemy);
+  if (distanceTwo < 15 + 25 && !RESPAWN) {
+    enemy.destroy();
     cleanContainer(enemyContainer, enemy.getEnemyShape());
     if (--lives <= 0)
       gameover();
@@ -311,8 +346,8 @@ function bulletCollision(enemy, projectile) {
     distanceCalc(projectile.getYOffset(), enemy.getYOffset()));
 
   if (distanceOne < 5 + 25) {
-    destroyEnemy(enemy);
-    destroyBullet(projectile);
+    enemy.destroy();
+    projectile.destroy();
     cleanContainer(enemyContainer, enemy.getEnemyShape());
     cleanContainer(bulletContainer, projectile.getProjectileShape());
     incrementScore();
@@ -322,12 +357,12 @@ function bulletCollision(enemy, projectile) {
 function gameover() {
   clearTimeout(timer);
   clearInterval(nIntervId);
-  tempShield = true;
+  RESPAWN = true;
 
   for (x = 0; x < enemies.length; x++) {
-    createjs.Tween.get(enemyContainer.children[x])
+    createjs.Tween.get(enemies[x].getEnemyShape())
       .to({ alpha: 0, visible: false }, 100);
-    addParticles(enemyContainer.children[x].x, enemyContainer.children[x].y, getRandomIntInclusive(7, 17));
+    addParticles(enemies[x].getXOffset(), enemies[x].getYOffset(), getRandomIntInclusive(7, 17));
   }
 
   setTimeout(enemyContainer.removeAllChildren(), 100);
@@ -340,9 +375,9 @@ function gameover() {
 function resetShip() {
   createjs.Tween.get(triangle)
     .to({ alpha: 0 }, 500).to({ alpha: 1 }, 500).to({ alpha: 0 }, 500).to({ alpha: 1 }, 500);
-  tempShield = true;
+  RESPAWN = true;
   setTimeout(function () {
-    tempShield = false;
+    RESPAWN = false;
   }, 2000);
 }
 
@@ -378,64 +413,40 @@ function createSphere(sphere) {
 
 /** Particle Functions **/
 function moveParticles(element, index, array) {
-  particleContainer.children[index].x += (particles[index].run * particles[index].xDirection);
-  particleContainer.children[index].y += (particles[index].rise * particles[index].yDirection);
-  particleContainer.children[index].rotation++;
+  array[index].move();
 }
 
 function addParticles(x, y, amount) {
   while (amount > 0) {
-    var particle = new createjs.Shape();
     var randInt = getRandomIntInclusive(0, 2);
+    var xDirection;
+    var yDirection;
 
-    if (randInt === 0) {
-      particle.graphics.setStrokeStyle(1).beginStroke(createjs.Graphics.getHSL(Math.random() * 360, 100, 50)).drawCircle(0, 0, getRandomIntInclusive(5, 25));
+    if (getRandomIntInclusive(0, 1) > 0) {
+      yDirection = 1;
     }
-    else if (randInt === 1) {
-      particle.graphics.beginFill(createjs.Graphics.getHSL(Math.random() * 360, 100, 50)).drawCircle(0, 0, getRandomIntInclusive(5, 25));
-      var blurFilter = new createjs.BlurFilter(5, 5, 1);
-      particle.filters = [blurFilter];
-      var bounds = blurFilter.getBounds();
+    else
+      yDirection = -1;
 
-      particle.cache(-50 + bounds.x, -50 + bounds.y, 100 + bounds.width, 100 + bounds.height);
+    if (getRandomIntInclusive(0, 1) > 0) {
+      xDirection = 1;
     }
-    else {
-      particle.graphics.beginFill("#FF0").drawPolyStar(0, 0, getRandomIntInclusive(5, 15), 5, 0.5, -90);
-    }
+    else
+      xDirection = -1;
 
-    particle.x = x;
-    particle.y = y;
-    particle.alpha = 1;
-
-    particles.push(new createParticle(particle));
-
-    particleContainer.addChild(particles[particles.length - 1].shape);
+    particles.push(new RainbowDust(x, y, randInt, xDirection, yDirection));
+    particles[particles.length - 1].createRainbowDust(randInt);
+    particleContainer.addChild(particles[particles.length - 1].getRainbowDustShape());
     amount--;
   }
 
-  for (x = 0; x < particles.length; x++) {
-    createjs.Tween.get(particles[x].shape)
+  for (x = 0; x > particles.length; x++) {
+    createjs.Tween.get(particles[x].getRainbowDustShape())
       .to({ alpha: 0, visible: false }, 400);
+      particles.pop
   }
-}
-
-function createParticle(particle) {
-  this.shape = particle;
-
-  if (getRandomIntInclusive(0, 1) > 0) {
-    this.yDirection = 1;
-  }
-  else
-    this.yDirection = -1;
-
-  if (getRandomIntInclusive(0, 1) > 0) {
-    this.xDirection = 1;
-  }
-  else
-    this.xDirection = -1;
-
-  this.rise = Math.floor(Math.random() * 11);
-  this.run = Math.floor(Math.random() * 11);
+  //TODO: figure out how to release this resource appropriately array should be local
+  //particles.length = 0;
 }
 
 function superSonic() {
@@ -509,7 +520,7 @@ $(document).keydown(function (event) {
     //initialize();
     randomEnemySpawn();
     //nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
-    tempShield = false;
+    RESPAWN = false;
     lives = 3;
     score = 0;
     score_life_text.text = "lives: " + lives + "  Score: " + score;
