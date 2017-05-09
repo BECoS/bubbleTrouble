@@ -1,7 +1,8 @@
 var stage;
-var triangle;
+var myShip;
 var sphereContainer = new createjs.Container();
 var bulletContainer = new createjs.Container();
+var shipContainer = new createjs.Container();
 var enemyContainer = new createjs.Container();
 var particleContainer = new createjs.Container();
 var specialContainer = new createjs.Container();
@@ -14,13 +15,20 @@ var oldX;
 var oldY;
 var DEGREE_TO_RADIAN = -Math.PI / 180;
 var score = 0;
-var nIntervId;
+//var nIntervId;
 var special = false;
 var sonic = new createjs.Shape();
 var RESPAWN = false;
 var lives = 3;
 var timer;
 var SEEKER = false;
+var KEYCODE_LEFT = 37,
+  KEYCODE_RIGHT = 39,
+  KEYCODE_UP = 38,
+  KEYCODE_DOWN = 40;
+var left, right, up, down = false;
+var MAX_SPEED = 3;
+//var acceleration = 0;
 
 $(document).ready(function () {
   var context = $('canvas')[0].getContext('2d');
@@ -37,25 +45,26 @@ $(document).ready(function () {
   score_life_text.x = context.canvas.width - ((1 / 2) * context.canvas.width);
   score_life_text.baseLine = 'alphabetic';
 
-  triangle = new createjs.Shape();
+  /*triangle = new createjs.Shape();
   triangle.graphics.beginFill('DeepSkyBlue');
   triangle.graphics.moveTo(0, 0).lineTo(10, 15).lineTo(0, 30).lineTo(30, 15).lineTo(0, 0);
   triangle.regX = 15;
   triangle.regY = 15;
-  triangle.x = triangle.y = 100;
+  triangle.x = triangle.y = 100;*/
 
   bulletContainer.x = 0;
   bulletContainer.y = 0;
 
   stage.addChild(sphereContainer);
-  stage.addChild(triangle);
+  //stage.addChild(triangle);
+  stage.addChild(shipContainer);
   stage.addChild(bulletContainer);
   stage.addChild(specialContainer);
   stage.addChild(enemyContainer);
   stage.addChild(particleContainer);
   stage.addChild(score_life_text);
 
-  stage.on("stagemousemove", function (evt) {
+  /*stage.on("stagemousemove", function (evt) {
     if (oldX) {
       triangle.x = evt.stageX;
       triangle.y = evt.stageY;
@@ -63,7 +72,7 @@ $(document).ready(function () {
 
     oldX = evt.stageX;
     oldY = evt.stageY;
-  })
+  })*/
 
   //Spawns enemies on a random time interval between 1 - 3 seconds
   //nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
@@ -73,16 +82,42 @@ $(document).ready(function () {
       shoot();
   })
 
+  addShip();
   randomEnemySpawn();
 });
 
+class Ship {
+  constructor() {
+    this.shape = new createjs.Shape();
+    this.shape.graphics.beginFill('DeepSkyBlue');
+    this.shape.graphics.moveTo(0, 0).lineTo(10, 15).lineTo(0, 30).lineTo(30, 15).lineTo(0, 0);
+    this.shape.regX = 15;
+    this.shape.regY = 15;
+    this.shape.x = this.shape.y = 100;
+    this.acceleration = 0;
+  }
+
+  getAcceleration() {
+    return this.acceleration;
+  }
+
+  setAcceleration(acceleration) {
+    this.acceleration = acceleration;
+  }
+
+  move() {
+
+  }
+
+}
+
 class Enemy {
   constructor() {
-    this.enemyShape = new createjs.Shape();
-    this.enemyShape.graphics.beginFill('black').drawCircle(0, 0, 25);
-    this.enemyShape.x = getRandomIntInclusive(26, 474);
-    this.enemyShape.y = getRandomIntInclusive(26, 474);
-    this.enemyShape.alpha = 0;
+    this.shape = new createjs.Shape();
+    this.shape.graphics.beginFill('black').drawCircle(0, 0, 25);
+    this.shape.x = getRandomIntInclusive(26, 474);
+    this.shape.y = getRandomIntInclusive(26, 474);
+    this.shape.alpha = 0;
     this.yDirection = 1;
     this.xDirection = 1;
     this.xMovement = getRandomIntInclusive(1, 10);
@@ -90,15 +125,15 @@ class Enemy {
   }
 
   getEnemyShape() {
-    return this.enemyShape;
+    return this.shape;
   }
 
   getXOffset() {
-    return this.enemyShape.x;
+    return this.shape.x;
   }
 
   getYOffset() {
-    return this.enemyShape.y;
+    return this.shape.y;
   }
 
   getXDirection() {
@@ -118,16 +153,16 @@ class Enemy {
   }
 
   move() {
-    this.enemyShape.x += (this.xMovement * this.xDirection);
-    this.enemyShape.y += (this.yMovement * this.yDirection);
+    this.shape.x += (this.xMovement * this.xDirection);
+    this.shape.y += (this.yMovement * this.yDirection);
   }
 
   destroy() {
-    createjs.Tween.get(this.enemyShape)
+    createjs.Tween.get(this.shape)
       .to({ alpha: 0, visible: false }, 100);
 
-    addParticles(this.enemyShape.x, this.enemyShape.y, getRandomIntInclusive(7, 17));
-    enemies.splice(enemyContainer.getChildIndex(this.enemyShape), 1);
+    addParticles(this.shape.x, this.shape.y, getRandomIntInclusive(7, 17));
+    enemies.splice(enemyContainer.getChildIndex(this.shape), 1);
   }
 }
 
@@ -137,98 +172,96 @@ class SeekerEnemy extends Enemy {
   }
 
   move() {
-    var arcTan = Math.atan2(triangle.y - this.enemyShape.y,
-      triangle.x - this.enemyShape.x);
+    var arcTan = Math.atan2(myShip.shape.y - this.shape.y,
+      myShip.shape.x - this.shape.x);
 
-    this.enemyShape.x += (Math.cos(arcTan) * this.run);
-    this.enemyShape.y += (Math.sin(arcTan) * this.rise);
+    this.shape.x += (Math.cos(arcTan) * this.run);
+    this.shape.y += (Math.sin(arcTan) * this.rise);
   }
 }
 
 class Projectile {
-  constructor() {
-    this.projectileShape = new createjs.Shape();
-    this.projectileShape.graphics.beginFill('black').drawCircle(0, 0, 5);
-    this.projectileShape.regX = 0;
-    this.projectileShape.regY = 0;
-    this.projectileShape.x = triangle.x;
-    this.projectileShape.y = triangle.y;
-    this.projectileShape.rotation = triangle.rotation;
+  constructor(shipXPosition, shipYPosition, shipRotation) {
+    this.shape = new createjs.Shape();
+    this.shape.graphics.beginFill('black').drawCircle(0, 0, 5);
+    this.shape.regX = 0;
+    this.shape.regY = 0;
+    this.shape.x = shipXPosition;
+    this.shape.y = shipYPosition;
+    this.shape.rotation = shipRotation;
   }
 
   getProjectileShape() {
-    return this.projectileShape;
+    return this.shape;
   }
 
   getXOffset() {
-    return this.projectileShape.x;
+    return this.shape.x;
   }
 
   getYOffset() {
-    return this.projectileShape.y;
+    return this.shape.y;
   }
 
   getRotation() {
-    return this.projectileShape.rotation;
+    return this.shape.rotation;
   }
 
   destroy() {
-    createjs.Tween.get(this.projectileShape)
+    createjs.Tween.get(this.shape)
       .to({ alpha: 0, visible: false }, 100);
   }
 
   move() {
-    var verticalMovement = Math.sin(this.projectileShape.rotation * DEGREE_TO_RADIAN) * 30;
-    var horizontalMovement = Math.cos(this.projectileShape.rotation * DEGREE_TO_RADIAN) * 30;
+    var verticalMovement = Math.sin(this.shape.rotation * DEGREE_TO_RADIAN) * 30;
+    var horizontalMovement = Math.cos(this.shape.rotation * DEGREE_TO_RADIAN) * 30;
 
-    this.projectileShape.x += horizontalMovement;
-    this.projectileShape.y -= verticalMovement;
+    this.shape.x += horizontalMovement;
+    this.shape.y -= verticalMovement;
   }
 }
 
 class RainbowDust {
   constructor(x, y, pattern, xDirection, yDirection) {
-    this.rainbowDustShape = new createjs.Shape();
-    this.rainbowDustShape.x = x;
-    this.rainbowDustShape.y = y;
-    this.rainbowDustShape.alpha = 1;
+    this.shape = new createjs.Shape();
+    this.shape.x = x;
+    this.shape.y = y;
+    this.shape.alpha = 1;
     this.xMovement = getRandomIntInclusive(1, 10);
     this.yMovement = getRandomIntInclusive(1, 10);
     this.yDirection = yDirection;
     this.xDirection = xDirection;
-
-    //createRainbowDust(pattern);
   }
 
   createRainbowDust(pattern) {
     if (pattern === 0) {
-      this.rainbowDustShape.graphics.setStrokeStyle(1).beginStroke(createjs.Graphics.
+      this.shape.graphics.setStrokeStyle(1).beginStroke(createjs.Graphics.
         getHSL(Math.random() * 360, 100, 50)).drawCircle(0, 0, getRandomIntInclusive(5, 25));
     }
     else if (pattern === 1) {
-      this.rainbowDustShape.graphics.beginFill(createjs.Graphics.getHSL(Math.random() * 360, 100, 50)).
+      this.shape.graphics.beginFill(createjs.Graphics.getHSL(Math.random() * 360, 100, 50)).
         drawCircle(0, 0, getRandomIntInclusive(5, 25));
       var blurFilter = new createjs.BlurFilter(5, 5, 1);
-      this.rainbowDustShape.filters = [blurFilter];
+      this.shape.filters = [blurFilter];
       var bounds = blurFilter.getBounds();
 
-      this.rainbowDustShape.cache(-50 + bounds.x, -50 + bounds.y,
+      this.shape.cache(-50 + bounds.x, -50 + bounds.y,
         100 + bounds.width, 100 + bounds.height);
     }
     else {
-      this.rainbowDustShape.graphics.beginFill("#FF0").
+      this.shape.graphics.beginFill("#FF0").
         drawPolyStar(0, 0, getRandomIntInclusive(5, 15), 5, 0.5, -90);
     }
   }
 
   move() {
-    this.rainbowDustShape.x += (this.xMovement * this.xDirection);
-    this.rainbowDustShape.y += (this.yMovement * this.yDirection);
-    this.rainbowDustShape.rotation++;
+    this.shape.x += (this.xMovement * this.xDirection);
+    this.shape.y += (this.yMovement * this.yDirection);
+    this.shape.rotation++;
   }
 
   getRainbowDustShape() {
-    return this.rainbowDustShape;
+    return this.shape;
   }
 }
 
@@ -242,13 +275,16 @@ function randomEnemySpawn() {
 }
 
 function tick(event) {
+
+  moveShip();
+
   /**Move projectiles**/
   projectiles.forEach(moveProjectiles);
 
   for (var x = 0; x < enemies.length; x++) {
 
     /**Check for ship collisions**/
-    shipCollision(enemies[x]);
+    shipCollision(myShip, enemies[x]);
 
     /**Check for bullet collisions**/
     for (var y = 0; y < projectiles.length; y++) {
@@ -286,8 +322,39 @@ function tick(event) {
   sphereContainer.children.forEach(moveBackground);
 }
 
+function moveShip() {
+  //  multiplied by a factor to increase the speed
+  var y = Math.sin(myShip.shape.rotation * DEGREE_TO_RADIAN) * myShip.getAcceleration();
+  var x = Math.cos(myShip.shape.rotation * DEGREE_TO_RADIAN) * myShip.getAcceleration();
+  
+  // if rotating add to the ships radial acceleration
+  if (left)
+    myShip.shape.rotation += -2 - myShip.getAcceleration();
+  else if (right)
+    myShip.shape.rotation += 2 + myShip.getAcceleration();
+  else if (up) 
+    myShip.setAcceleration(myShip.getAcceleration() + 0.1);
+  else if (down)
+    myShip.setAcceleration(myShip.getAcceleration() - 0.1);
+
+  // Slowly deccelerate 
+  if (myShip.getAcceleration() > 0)
+    myShip.setAcceleration(myShip.getAcceleration() - 0.01);
+  else 
+    myShip.setAcceleration(myShip.getAcceleration() + 0.01);
+
+  // Update the ships position
+  myShip.shape.x += x;
+  myShip.shape.y -= y;
+}
+
 function moveEnemies(element, index, array) {
   enemies[index].move();
+}
+
+function addShip() {
+  myShip = new Ship();
+  shipContainer.addChild(myShip.shape);
 }
 
 function addEnemy() {
@@ -299,14 +366,15 @@ function addEnemy() {
     SEEKER = false;
   }
 
-  enemyContainer.addChild(enemies[enemies.length - 1].enemyShape);
-  createjs.Tween.get(enemies[enemies.length - 1].enemyShape)
+  enemyContainer.addChild(enemies[enemies.length - 1].shape);
+  createjs.Tween.get(enemies[enemies.length - 1].shape)
     .to({ alpha: 1, visible: true }, 500);
 }
 
 /*** Projectile Functions ***/
 function shoot() {
-  projectiles.push(new Projectile())
+  projectiles.push(new Projectile(myShip.shape.x, myShip.shape.y,
+    myShip.shape.rotation));
   bulletContainer.addChild(projectiles[projectiles.length - 1].getProjectileShape());
 }
 
@@ -325,9 +393,9 @@ function moveProjectiles(element, index, array) {
 }
 
 /**Ship collision detection**/
-function shipCollision(enemy) {
-  var distanceTwo = pythagorus(distanceCalc(triangle.x, enemy.getXOffset()),
-    distanceCalc(triangle.y, enemy.getYOffset()));
+function shipCollision(ship, enemy) {
+  var distanceTwo = pythagorus(distanceCalc(ship.shape.x, enemy.getXOffset()),
+    distanceCalc(ship.shape.y, enemy.getYOffset()));
 
   if (distanceTwo < 15 + 25 && !RESPAWN) {
     enemy.destroy();
@@ -356,7 +424,7 @@ function bulletCollision(enemy, projectile) {
 
 function gameover() {
   clearTimeout(timer);
-  clearInterval(nIntervId);
+  //clearInterval(nIntervId);
   RESPAWN = true;
 
   for (x = 0; x < enemies.length; x++) {
@@ -373,7 +441,7 @@ function gameover() {
 
 /**Gives the ship a two second window after being hit**/
 function resetShip() {
-  createjs.Tween.get(triangle)
+  createjs.Tween.get(myShip.shape)
     .to({ alpha: 0 }, 500).to({ alpha: 1 }, 500).to({ alpha: 0 }, 500).to({ alpha: 1 }, 500);
   RESPAWN = true;
   setTimeout(function () {
@@ -440,10 +508,10 @@ function addParticles(x, y, amount) {
     amount--;
   }
 
-  for (x = 0; x > particles.length; x++) {
+  for (x = 0; x < particles.length; x++) {
     createjs.Tween.get(particles[x].getRainbowDustShape())
-      .to({ alpha: 0, visible: false }, 400);
-      particles.pop
+      .to({ alpha: 0, visible: false }, 500);
+    particles.pop
   }
   //TODO: figure out how to release this resource appropriately array should be local
   //particles.length = 0;
@@ -507,6 +575,55 @@ function getRandomIntInclusive(min, max) {
 }
 
 $(document).keydown(function (event) {
+  switch (event.keyCode) {
+    case KEYCODE_LEFT:
+      left = true;
+      break;
+    case KEYCODE_RIGHT:
+      right = true;
+      break;
+    case KEYCODE_UP:
+      up = true;
+      break;
+    case KEYCODE_DOWN:
+      down = true;
+      break;
+  }
+});
+
+$(document).keyup(function (event) {
+  switch (event.keyCode) {
+    case KEYCODE_LEFT:
+      left = false;
+      break;
+    case KEYCODE_RIGHT:
+      right = false;
+      break;
+    case KEYCODE_UP:
+      up = false;
+      break;
+    case KEYCODE_DOWN:
+      down = false;
+      break;
+  }
+});
+
+function calculateTriangleXY(C) {
+  var B = 180;
+  // solve for A
+  var A = 180 - C - B;
+  // solve c and a
+  var c = (15 * Math.sin(toRadians(C))) / Math.sin(toRadians(B));
+  var a = (c * Math.sin(toRadians(A))) / Math.sin(toRadians(C));
+  // return x/y sides
+  return { x: a, y: c }
+}
+
+function toRadians(deg) {
+  return deg / 180 * -Math.PI;
+}
+
+/*(document).keydown(function (event) {
   if (event.which == 65) {
     triangle.rotation -= 7;
   }
@@ -516,7 +633,7 @@ $(document).keydown(function (event) {
   /**else if (event.which == 32) {
     superSonic();
   }**/
-  else if (event.which == 32 && lives == 0) {
+  /*else if (event.which == 32 && lives == 0) {
     //initialize();
     randomEnemySpawn();
     //nIntervId = setInterval(addSphere, 1000 * getRandomIntInclusive(0.1, 1));
@@ -525,4 +642,4 @@ $(document).keydown(function (event) {
     score = 0;
     score_life_text.text = "lives: " + lives + "  Score: " + score;
   }
-});
+});*/
